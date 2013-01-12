@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Sandbox.AsyncSocketServer.Abstraction;
 
 namespace Sandbox.AsyncSocketServer
 {
@@ -12,13 +13,13 @@ namespace Sandbox.AsyncSocketServer
         readonly Socket _listener;
         readonly Stack<SocketAwaitable> _awaitablesPool;
 
-        readonly Func<Socket, IDataSocket> _getDataSocket;
+        readonly Func<Socket, IDataSocket> _createDataSocket;
 
         public Listener(
             ListenerSettings settings, 
-            Func<Socket,IDataSocket> getDataSocket)
+            Func<Socket, IDataSocket> createDataSocket)
         {
-            _getDataSocket = getDataSocket;
+            _createDataSocket = createDataSocket;
 
             // demand permission
             var permission = new SocketPermission(
@@ -28,7 +29,7 @@ namespace Sandbox.AsyncSocketServer
 
             // create event arg pool
             _awaitablesPool = new Stack<SocketAwaitable>(
-                Enumerable.Range(0, 500)
+                Enumerable.Range(0, 10)
                           .Select(i => new SocketAwaitable()));
 
             // create a real socket and wrap it up
@@ -53,7 +54,7 @@ namespace Sandbox.AsyncSocketServer
             awaitable.EventArgs.AcceptSocket = null;
             _awaitablesPool.Push(awaitable);
 
-            return _getDataSocket(socket);
+            return _createDataSocket(socket);
         }
 
         #region dispose

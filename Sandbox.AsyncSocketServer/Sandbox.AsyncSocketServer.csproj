@@ -39,8 +39,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IListener.cs" />
-    <Compile Include="IDataSocket.cs" />
+    <Compile Include="BufferManager.cs" />
+    <Compile Include="BufferAllocation.cs" />
+    <Compile Include="BufferMaximumAllocationsExceededException.cs" />
+    <Compile Include="DataSocket.cs" />
+    <Compile Include="DataSocketFactory.cs" />
+    <Compile Include="Abstraction\IBufferManager.cs" />
+    <Compile Include="Abstraction\IDataSocketFactory.cs" />
+    <Compile Include="Abstraction\IListener.cs" />
+    <Compile Include="Abstraction\IDataSocket.cs" />
     <Compile Include="Listener.cs" />
     <Compile Include="ListenerSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

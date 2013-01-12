@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Sandbox.AsyncSocketServer.Abstraction;
 
 namespace Sandbox.AsyncSocketServer
 {
-    public interface IDataSocket : IDisposable
-    {
-        Task<byte[]> ReceiveAsync();
-
-        Task SendAsync(byte[] data);
-    }
-
     public class DataSocket : IDataSocket
     {
         readonly Socket _socket;
