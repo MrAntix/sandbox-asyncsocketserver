@@ -33,7 +33,7 @@ namespace Sandbox.AsyncSocketServer
                 AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             _socket.Bind(new IPEndPoint(settings.IPAddress, settings.Port));
-            _socket.Listen(100);
+            _socket.Listen(settings.Backlog);
         }
 
         public async Task<IDataSocket> AcceptAsync()
