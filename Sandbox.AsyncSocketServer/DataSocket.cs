@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace Sandbox.AsyncSocketServer
         readonly Action _release;
 
         public DataSocket(
-            Socket socket, SocketAwaitable awaitable, 
+            Socket socket, SocketAwaitable awaitable,
             string terminator,
             Action release)
         {
@@ -33,7 +34,7 @@ namespace Sandbox.AsyncSocketServer
                 _awaitable.Reset();
                 if (!_socket.ReceiveAsync(_awaitable.EventArgs))
                     _awaitable.IsCompleted = true;
-                
+
                 await _awaitable;
 
                 var bytesReceived = _awaitable.EventArgs.BytesTransferred;
@@ -45,17 +46,47 @@ namespace Sandbox.AsyncSocketServer
 
                 data.Append(received);
 
-                if (data.ToString().Contains(_terminator)) break;
+                var terminatorIndex = GetTerminatorIndex(data);
+                if (terminatorIndex > -1)
+                {
+                    // terminator found, return all data up to it
+                    return Encoding.ASCII.GetBytes(data.ToString(0, terminatorIndex));
+                }
             }
 
-            var allReceived = data.ToString(0, data.Length - _terminator.Length);
-
-            return Encoding.ASCII.GetBytes(allReceived);
+            // client closed connection
+            return Encoding.ASCII.GetBytes(data.ToString());
         }
 
-        public Task SendAsync(byte[] data)
+        public async Task SendAsync(byte[] data)
         {
-            throw new NotImplementedException();
+            _awaitable.Reset();
+            _awaitable.EventArgs.SetBuffer(data, 0, data.Length);
+
+            if (!_socket.SendAsync(_awaitable.EventArgs))
+                _awaitable.IsCompleted = true;
+
+            await _awaitable;
+
+        }
+
+        int GetTerminatorIndex(StringBuilder data)
+        {
+            if (data == null)
+                throw new ArgumentNullException("data");
+
+            for (var dataIndex = 0; dataIndex < data.Length; dataIndex++)
+            {
+                if (Enumerable
+                    .Range(0, _terminator.Length)
+                    .All(
+                        terminatorIndex =>
+                        dataIndex + terminatorIndex < data.Length
+                        && data[dataIndex + terminatorIndex] == _terminator[terminatorIndex]))
+                    return dataIndex;
+            }
+
+            return -1;
         }
 
         #region dispose

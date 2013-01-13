@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -14,17 +15,20 @@ namespace Sandbox.AsyncSocketServer.Tests
         public static ManualResetEvent AllDone = new ManualResetEvent(false);
         readonly Socket _client;
         IDataSocket _server;
+        static int _port = 8089;
 
         const string DataToSend = "Hello World";
         const string Terminator = "\n\n";
 
         public full_cycle_test()
         {
+            Trace.WriteLine("Created Socket");
+
             AllDone.Reset();
 
             var ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
             var ipAddress = ipHostInfo.AddressList[1];
-            const int port = 8088;
+            var port = _port++;
 
             var bufferManager = new BufferManager(1, 1024);
             var dataSocketFactory = new DataSocketFactory(bufferManager, Terminator);
@@ -64,6 +68,20 @@ namespace Sandbox.AsyncSocketServer.Tests
             // see what we get
             var result = await _server.ReceiveAsync();
             var actual = Encoding.ASCII.GetString(result);
+
+            Assert.Equal(DataToSend, actual);
+        }
+
+        [Fact]
+        public async Task data_sent()
+        {
+            await _server.SendAsync(
+                Encoding.ASCII.GetBytes(DataToSend));
+
+            var buffer = new byte[1024];
+            var bytesReceived = _client.Receive(buffer);
+
+            var actual = Encoding.ASCII.GetString(buffer, 0, bytesReceived);
 
             Assert.Equal(DataToSend, actual);
         }
