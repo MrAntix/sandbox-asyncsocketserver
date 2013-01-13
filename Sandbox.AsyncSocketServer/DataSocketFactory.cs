@@ -9,11 +9,14 @@ namespace Sandbox.AsyncSocketServer
     {
         readonly IBufferManager _bufferManager;
         readonly Stack<SocketAwaitable> _awaitablesPool;
+        readonly string _terminator;
 
         public DataSocketFactory(
-            IBufferManager bufferManager)
+            IBufferManager bufferManager, 
+            string terminator)
         {
             _bufferManager = bufferManager;
+            _terminator = terminator;
 
             // create event arg pool
             _awaitablesPool = new Stack<SocketAwaitable>(
@@ -33,6 +36,7 @@ namespace Sandbox.AsyncSocketServer
 
             return new DataSocket(
                 socket, awaitable,
+                _terminator,
                 () =>
                     {
                         _awaitablesPool.Push(awaitable);

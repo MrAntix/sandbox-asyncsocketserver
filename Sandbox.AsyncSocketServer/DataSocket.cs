@@ -10,15 +10,18 @@ namespace Sandbox.AsyncSocketServer
     {
         readonly Socket _socket;
         readonly SocketAwaitable _awaitable;
+        readonly string _terminator;
         readonly Action _release;
 
         public DataSocket(
-            Socket socket, SocketAwaitable awaitable,
+            Socket socket, SocketAwaitable awaitable, 
+            string terminator,
             Action release)
         {
             _socket = socket;
             _awaitable = awaitable;
             _release = release;
+            _terminator = terminator;
         }
 
         public async Task<byte[]> ReceiveAsync()
@@ -30,19 +33,24 @@ namespace Sandbox.AsyncSocketServer
                 _awaitable.Reset();
                 if (!_socket.ReceiveAsync(_awaitable.EventArgs))
                     _awaitable.IsCompleted = true;
-
+                
                 await _awaitable;
 
                 var bytesReceived = _awaitable.EventArgs.BytesTransferred;
                 if (bytesReceived <= 0) break;
 
-                data.Append(
-                    Encoding.ASCII.GetString(
-                        _awaitable.EventArgs.Buffer,
-                        _awaitable.EventArgs.Offset, bytesReceived));
+                var received = Encoding.ASCII.GetString(
+                    _awaitable.EventArgs.Buffer,
+                    _awaitable.EventArgs.Offset, bytesReceived);
+
+                data.Append(received);
+
+                if (data.ToString().Contains(_terminator)) break;
             }
 
-            return Encoding.ASCII.GetBytes(data.ToString());
+            var allReceived = data.ToString(0, data.Length - _terminator.Length);
+
+            return Encoding.ASCII.GetBytes(allReceived);
         }
 
         public Task SendAsync(byte[] data)
