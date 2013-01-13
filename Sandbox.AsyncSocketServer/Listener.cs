@@ -10,8 +10,8 @@ namespace Sandbox.AsyncSocketServer
 {
     public class Listener : IListener
     {
-        readonly Socket _listener;
-        readonly Stack<SocketAwaitable> _awaitablesPool;
+        readonly Socket _socket;
+        readonly SocketAwaitable _awaitable;
 
         readonly Func<Socket, IDataSocket> _createDataSocket;
 
@@ -27,32 +27,27 @@ namespace Sandbox.AsyncSocketServer
                 settings.IPAddress.ToString(), settings.Port);
             permission.Demand();
 
-            // create event arg pool
-            _awaitablesPool = new Stack<SocketAwaitable>(
-                Enumerable.Range(0, 10)
-                          .Select(i => new SocketAwaitable()));
+            // create awaitable
+            _awaitable = new SocketAwaitable();
 
-            // create a real socket and wrap it up
-            _listener = new Socket(
+            // create a tcp socket to listen
+            _socket = new Socket(
                 AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-            _listener.Bind(new IPEndPoint(settings.IPAddress, settings.Port));
-            _listener.Listen(100);
+            _socket.Bind(new IPEndPoint(settings.IPAddress, settings.Port));
+            _socket.Listen(100);
         }
 
         public async Task<IDataSocket> AcceptAsync()
         {
-            var awaitable = _awaitablesPool.Pop();
+            _awaitable.Reset();
+            if (!_socket.AcceptAsync(_awaitable.EventArgs))
+                _awaitable.IsCompleted = true;
 
-            awaitable.Reset();
-            if (!_listener.AcceptAsync(awaitable.EventArgs))
-                awaitable.IsCompleted = true;
+            await _awaitable;
 
-            await awaitable;
-
-            var socket = awaitable.EventArgs.AcceptSocket;
-            awaitable.EventArgs.AcceptSocket = null;
-            _awaitablesPool.Push(awaitable);
+            var socket = _awaitable.EventArgs.AcceptSocket;
+            _awaitable.EventArgs.AcceptSocket = null;
 
             return _createDataSocket(socket);
         }
@@ -71,9 +66,9 @@ namespace Sandbox.AsyncSocketServer
 
             if (disposing)
             {
-                if (_listener != null)
+                if (_socket != null)
                 {
-                    _listener.Dispose();
+                    _socket.Dispose();
                 }
             }
 
