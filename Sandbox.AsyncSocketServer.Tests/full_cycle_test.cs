@@ -25,7 +25,6 @@ namespace Sandbox.AsyncSocketServer.Tests
             var bufferManager = new BufferManager(1, 1024);
             var dataSocketFactory = new DataSocketFactory(bufferManager);
 
-
             var listener = new Listener(
                 new ListenerSettings(ipAddress, port),
                 dataSocketFactory.Create);
@@ -33,6 +32,7 @@ namespace Sandbox.AsyncSocketServer.Tests
             IDataSocket socket = null;
             const string expected = "Hello World";
 
+            // set the socket on continue to allow connection to be made below
             listener.AcceptAsync()
                     .ContinueWith(t =>
                         {
@@ -40,7 +40,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                             AllDone.Set();
                         });
 
-            // Create a socket and connect
+            // Create a socket and connect and send data
             using (var client = new Socket(
                 AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
@@ -54,8 +54,10 @@ namespace Sandbox.AsyncSocketServer.Tests
                     Encoding.ASCII.GetBytes(expected));
             }
 
+            // wait will connection is made
             AllDone.WaitOne();
 
+            // see what we get
             var result = await socket.ReceiveAsync();
             var actual = Encoding.ASCII.GetString(result);
 
