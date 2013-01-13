@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="buffer_manager_test.cs" />
+    <Compile Include="full_cycle_test.cs" />
     <Compile Include="listener_test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

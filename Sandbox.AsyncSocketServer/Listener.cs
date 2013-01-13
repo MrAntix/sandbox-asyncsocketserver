@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -16,7 +14,7 @@ namespace Sandbox.AsyncSocketServer
         readonly Func<Socket, IDataSocket> _createDataSocket;
 
         public Listener(
-            ListenerSettings settings, 
+            ListenerSettings settings,
             Func<Socket, IDataSocket> createDataSocket)
         {
             _createDataSocket = createDataSocket;

@@ -23,7 +23,21 @@ namespace Sandbox.AsyncSocketServer
 
         public IDataSocket Create(Socket socket)
         {
-            return new DataSocket(socket);
+            var awaitable = _awaitablesPool.Pop();
+            var bufferAllocation = _bufferManager.Allocate();
+
+            awaitable.EventArgs
+                     .SetBuffer(bufferAllocation.Buffer,
+                                bufferAllocation.Offset, bufferAllocation.Size);
+
+
+            return new DataSocket(
+                socket, awaitable,
+                () =>
+                    {
+                        _awaitablesPool.Push(awaitable);
+                        _bufferManager.Deallocate(bufferAllocation);
+                    });
         }
     }
 }
