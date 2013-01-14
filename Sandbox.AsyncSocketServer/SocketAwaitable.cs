@@ -11,7 +11,6 @@ namespace Sandbox.AsyncSocketServer
         static readonly Action Sentinel = () => { };
 
         Action _continuation;
-        bool _isCompleted;
 
         public SocketAwaitable()
         {
@@ -37,11 +36,7 @@ namespace Sandbox.AsyncSocketServer
             return this;
         }
 
-        public bool IsCompleted
-        {
-            get { return _isCompleted; }
-            internal set { _isCompleted = value; }
-        }
+        public bool IsCompleted { get; internal set; }
 
         public SocketAsyncEventArgs EventArgs { get; private set; }
 
