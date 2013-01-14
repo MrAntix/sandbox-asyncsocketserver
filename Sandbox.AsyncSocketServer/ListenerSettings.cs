@@ -9,7 +9,7 @@ namespace Sandbox.AsyncSocketServer
         readonly int _backlog;
 
         public ListenerSettings(
-            IPAddress ipAddress, int port, 
+            IPAddress ipAddress, int port,
             int backlog = 100)
         {
             _ipAddress = ipAddress;

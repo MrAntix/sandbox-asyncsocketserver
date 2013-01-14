@@ -67,7 +67,6 @@ namespace Sandbox.AsyncSocketServer
                 _awaitable.IsCompleted = true;
 
             await _awaitable;
-
         }
 
         int GetTerminatorIndex(StringBuilder data)
