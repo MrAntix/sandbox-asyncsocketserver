@@ -61,6 +61,7 @@
     <Compile Include="listener_send_receive_test.cs" />
     <Compile Include="listener_test.cs" />
     <Compile Include="listener_test_base.cs" />
+    <Compile Include="listener_thrash_test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
