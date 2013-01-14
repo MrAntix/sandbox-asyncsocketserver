@@ -24,19 +24,28 @@ namespace Sandbox.AsyncSocketServer
             _allocationPool = new Stack<BufferAllocation>();
         }
 
+        public int MaximumAllocations
+        {
+            get { return _maximumAllocations; }
+        }
+
+        public int AllocatedBufferSize
+        {
+            get { return _allocatedBufferSize; }
+        }
 
         public BufferAllocation Allocate()
         {
             if (_allocationPool.Count == 0)
             {
                 // create allocation upto the max allowed
-                if (_allocationIndex == _maximumAllocations)
+                if (_allocationIndex == MaximumAllocations)
                     throw new BufferMaximumAllocationsExceededException();
 
                 var allocation = new BufferAllocation(
                     _buffers,
-                    _allocationIndex*_allocatedBufferSize,
-                    _allocatedBufferSize);
+                    _allocationIndex*AllocatedBufferSize,
+                    AllocatedBufferSize);
 
                 _allocationIndex++;
 

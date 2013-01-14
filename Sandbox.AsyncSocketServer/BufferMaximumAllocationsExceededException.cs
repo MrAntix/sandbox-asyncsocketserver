@@ -12,7 +12,8 @@ namespace Sandbox.AsyncSocketServer
 
         protected BufferMaximumAllocationsExceededException(
             SerializationInfo info,
-            StreamingContext context) : base(info, context)
+            StreamingContext context)
+            : base(info, context)
         {
         }
     }

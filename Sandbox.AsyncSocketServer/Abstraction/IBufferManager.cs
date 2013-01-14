@@ -4,5 +4,8 @@
     {
         BufferAllocation Allocate();
         void Deallocate(BufferAllocation allocation);
+
+        int MaximumAllocations { get; }
+        int AllocatedBufferSize { get; }
     }
 }
