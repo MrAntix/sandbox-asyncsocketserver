@@ -9,12 +9,12 @@ namespace Sandbox.AsyncSocketServer.Tests
     public class listener_thrash_test : listener_test_base
     {
         [Fact]
-        public async Task open_clients_to_max()
+        public void open_clients_to_max()
         {
             var clients =
                 Enumerable
                     .Range(0, MaxBuffers)
-                    .Select(async i => await CreateClient())
+                    .Select(i => CreateClient())
                     .Select(t => t.Result);
 
             var message = Encoding.ASCII.GetBytes("Hello World" + Terminator);
