@@ -48,6 +48,7 @@
     <Compile Include="Abstraction\IDataSocketFactory.cs" />
     <Compile Include="Abstraction\IListener.cs" />
     <Compile Include="Abstraction\IDataSocket.cs" />
+    <Compile Include="DataSocketFactoryException.cs" />
     <Compile Include="Listener.cs" />
     <Compile Include="ListenerSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
