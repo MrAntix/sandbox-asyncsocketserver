@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Sandbox.AsyncSocketServer.Abstraction;
 
 namespace Sandbox.AsyncSocketServer
@@ -11,7 +11,7 @@ namespace Sandbox.AsyncSocketServer
         readonly int _maximumAllocations;
 
         int _allocationIndex;
-        readonly Stack<BufferAllocation> _allocationPool;
+        readonly ConcurrentStack<BufferAllocation> _allocationPool;
 
         public BufferManager(int maximumAllocations, int allocatedBufferSize)
         {
@@ -21,7 +21,7 @@ namespace Sandbox.AsyncSocketServer
             _allocatedBufferSize = allocatedBufferSize;
 
             _allocationIndex = 0;
-            _allocationPool = new Stack<BufferAllocation>();
+            _allocationPool = new ConcurrentStack<BufferAllocation>();
         }
 
         public int MaximumAllocations
@@ -36,13 +36,15 @@ namespace Sandbox.AsyncSocketServer
 
         public BufferAllocation Allocate()
         {
-            if (_allocationPool.Count == 0)
+            BufferAllocation allocation;
+
+            if (!_allocationPool.TryPop(out allocation))
             {
                 // create allocation upto the max allowed
                 if (_allocationIndex == MaximumAllocations)
                     throw new BufferMaximumAllocationsExceededException();
 
-                var allocation = new BufferAllocation(
+                allocation = new BufferAllocation(
                     _buffers,
                     _allocationIndex*AllocatedBufferSize,
                     AllocatedBufferSize);
@@ -52,8 +54,7 @@ namespace Sandbox.AsyncSocketServer
                 return allocation;
             }
 
-            // reuse previously created
-            return _allocationPool.Pop();
+            return allocation;
         }
 
         public void Deallocate(BufferAllocation allocation)

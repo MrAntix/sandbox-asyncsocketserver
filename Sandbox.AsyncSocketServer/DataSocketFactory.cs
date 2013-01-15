@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Linq;
 using System.Net.Sockets;
 using Sandbox.AsyncSocketServer.Abstraction;
@@ -8,7 +8,7 @@ namespace Sandbox.AsyncSocketServer
     public class DataSocketFactory : IDataSocketFactory
     {
         readonly IBufferManager _bufferManager;
-        readonly Stack<SocketAwaitable> _awaitablesPool;
+        readonly ConcurrentStack<SocketAwaitable> _awaitablesPool;
         readonly string _terminator;
 
         public DataSocketFactory(
@@ -19,23 +19,22 @@ namespace Sandbox.AsyncSocketServer
             _terminator = terminator;
 
             // create event arg pool
-            _awaitablesPool = new Stack<SocketAwaitable>(
+            _awaitablesPool = new ConcurrentStack<SocketAwaitable>(
                 Enumerable.Range(0, bufferManager.MaximumAllocations)
                           .Select(i => new SocketAwaitable()));
         }
 
         public IDataSocket Create(Socket socket)
         {
-            if (_awaitablesPool.Count == 0)
+            SocketAwaitable awaitable;
+            if (!_awaitablesPool.TryPop(out awaitable))
                 throw new DataSocketFactoryException();
 
-            var awaitable = _awaitablesPool.Pop();
             var bufferAllocation = _bufferManager.Allocate();
 
             awaitable.EventArgs
                      .SetBuffer(bufferAllocation.Buffer,
                                 bufferAllocation.Offset, bufferAllocation.Size);
-
 
             return new DataSocket(
                 socket, awaitable,
