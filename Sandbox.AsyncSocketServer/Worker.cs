@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -27,7 +28,7 @@ namespace Sandbox.AsyncSocketServer
 
         public async Task<byte[]> ReceiveAsync()
         {
-            var data = new StringBuilder();
+            var data = new List<byte>();
 
             while (true)
             {
@@ -37,25 +38,30 @@ namespace Sandbox.AsyncSocketServer
 
                 await _awaitable;
 
+                // get the place to start looking for the terminator
+                var terminatorIndexStart = data.Count > _terminator.Length
+                                     ? data.Count - _terminator.Length
+                                     : 0;
+
+                // check the number of bytes recieved
                 var bytesReceived = _awaitable.EventArgs.BytesTransferred;
                 if (bytesReceived <= 0) break;
 
-                var received = Encoding.ASCII.GetString(
-                    _awaitable.EventArgs.Buffer,
-                    _awaitable.EventArgs.Offset, bytesReceived);
+                // add the received data
+                data.AddRange(_awaitable.EventArgs
+                    .Buffer.Skip(_awaitable.EventArgs.Offset).Take(bytesReceived));
 
-                data.Append(received);
-
-                var terminatorIndex = GetTerminatorIndex(data);
+                // look for a terminator
+                var terminatorIndex = GetTerminatorIndex(data, terminatorIndexStart);
                 if (terminatorIndex > -1)
                 {
                     // terminator found, return all data up to it
-                    return Encoding.ASCII.GetBytes(data.ToString(0, terminatorIndex));
+                    return data.Take(terminatorIndex).ToArray();
                 }
             }
 
             // client closed connection
-            return Encoding.ASCII.GetBytes(data.ToString());
+            return data.ToArray();
         }
 
         public async Task SendAsync(byte[] data)
@@ -69,18 +75,18 @@ namespace Sandbox.AsyncSocketServer
             await _awaitable;
         }
 
-        int GetTerminatorIndex(StringBuilder data)
+        int GetTerminatorIndex(IReadOnlyList<byte> data, int startIndex)
         {
             if (data == null)
                 throw new ArgumentNullException("data");
 
-            for (var dataIndex = 0; dataIndex < data.Length; dataIndex++)
+            for (var dataIndex = startIndex; dataIndex < data.Count; dataIndex++)
             {
                 if (Enumerable
                     .Range(0, _terminator.Length)
                     .All(
                         terminatorIndex =>
-                        dataIndex + terminatorIndex < data.Length
+                        dataIndex + terminatorIndex < data.Count
                         && data[dataIndex + terminatorIndex] == _terminator[terminatorIndex]))
                     return dataIndex;
             }

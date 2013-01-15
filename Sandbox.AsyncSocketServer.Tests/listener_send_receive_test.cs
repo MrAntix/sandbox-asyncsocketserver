@@ -56,7 +56,7 @@ namespace Sandbox.AsyncSocketServer.Tests
             var clientServer = CreateClient();
             using (clientServer.Client)
             {
-                var expected = new String('x', 100000);
+                var expected = new String('x', 10000000);
 
                 clientServer.Client.Send(
                     Encoding.ASCII.GetBytes(expected + Settings.Terminator));
