@@ -11,11 +11,11 @@ namespace Sandbox.AsyncSocketServer
         readonly Socket _socket;
         readonly SocketAwaitable _awaitable;
 
-        readonly Func<Socket, IDataSocket> _createDataSocket;
+        readonly Func<Socket, IWorker> _createDataSocket;
 
         public Listener(
             ListenerSettings settings,
-            Func<Socket, IDataSocket> createDataSocket)
+            Func<Socket, IWorker> createDataSocket)
         {
             _createDataSocket = createDataSocket;
 
@@ -36,7 +36,7 @@ namespace Sandbox.AsyncSocketServer
             _socket.Listen(settings.Backlog);
         }
 
-        public async Task<IDataSocket> AcceptAsync()
+        public async Task<IWorker> AcceptAsync()
         {
             _awaitable.Reset();
             if (!_socket.AcceptAsync(_awaitable.EventArgs))

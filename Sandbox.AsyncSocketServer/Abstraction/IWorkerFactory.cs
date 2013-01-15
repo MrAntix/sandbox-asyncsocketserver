@@ -2,8 +2,8 @@
 
 namespace Sandbox.AsyncSocketServer.Abstraction
 {
-    public interface IDataSocketFactory
+    public interface IWorkerFactory
     {
-        IDataSocket Create(Socket socket);
+        IWorker Create(Socket socket);
     }
 }

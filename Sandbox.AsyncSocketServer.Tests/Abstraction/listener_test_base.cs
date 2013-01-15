@@ -32,7 +32,7 @@ namespace Sandbox.AsyncSocketServer.Tests.Abstraction
             _ipAddress = ipHostInfo.AddressList[1];
 
             _manager = new BufferManager(Settings.MaxConnections, Settings.BufferSize);
-            var dataSocketFactory = new DataSocketFactory(_manager, Settings.Terminator);
+            var dataSocketFactory = new WorkerFactory(_manager, Settings.Terminator);
 
             _listener = new Listener(
                 new ListenerSettings(_ipAddress, ++_port),
@@ -63,7 +63,7 @@ namespace Sandbox.AsyncSocketServer.Tests.Abstraction
         protected class ClientServer : IDisposable
         {
             public Socket Client;
-            public IDataSocket Server;
+            public IWorker Server;
 
             public void Dispose()
             {

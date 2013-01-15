@@ -5,13 +5,13 @@ using Sandbox.AsyncSocketServer.Abstraction;
 
 namespace Sandbox.AsyncSocketServer
 {
-    public class DataSocketFactory : IDataSocketFactory
+    public class WorkerFactory : IWorkerFactory
     {
         readonly IBufferManager _bufferManager;
         readonly ConcurrentStack<SocketAwaitable> _awaitablesPool;
         readonly string _terminator;
 
-        public DataSocketFactory(
+        public WorkerFactory(
             IBufferManager bufferManager,
             string terminator)
         {
@@ -24,11 +24,11 @@ namespace Sandbox.AsyncSocketServer
                           .Select(i => new SocketAwaitable()));
         }
 
-        public IDataSocket Create(Socket socket)
+        public IWorker Create(Socket socket)
         {
             SocketAwaitable awaitable;
             if (!_awaitablesPool.TryPop(out awaitable))
-                throw new DataSocketFactoryException();
+                throw new WorkerFactoryException();
 
             var bufferAllocation = _bufferManager.Allocate();
 
@@ -36,7 +36,7 @@ namespace Sandbox.AsyncSocketServer
                      .SetBuffer(bufferAllocation.Buffer,
                                 bufferAllocation.Offset, bufferAllocation.Size);
 
-            return new DataSocket(
+            return new Worker(
                 socket, awaitable,
                 _terminator,
                 () =>

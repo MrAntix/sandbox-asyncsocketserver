@@ -49,7 +49,7 @@ namespace Sandbox.AsyncSocketServer.Tests
             }
             catch (Exception ex)
             {
-                Assert.IsType<DataSocketFactoryException>(ex);
+                Assert.IsType<WorkerFactoryException>(ex);
             }
         }
     }

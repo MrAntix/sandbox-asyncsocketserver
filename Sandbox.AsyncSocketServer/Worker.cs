@@ -7,14 +7,14 @@ using Sandbox.AsyncSocketServer.Abstraction;
 
 namespace Sandbox.AsyncSocketServer
 {
-    public class DataSocket : IDataSocket
+    public class Worker : IWorker
     {
         readonly Socket _socket;
         readonly SocketAwaitable _awaitable;
         readonly string _terminator;
         readonly Action _release;
 
-        public DataSocket(
+        public Worker(
             Socket socket, SocketAwaitable awaitable,
             string terminator,
             Action release)
@@ -116,7 +116,7 @@ namespace Sandbox.AsyncSocketServer
             _disposed = true;
         }
 
-        ~DataSocket()
+        ~Worker()
         {
             Dispose(false);
         }

@@ -5,6 +5,6 @@ namespace Sandbox.AsyncSocketServer.Abstraction
 {
     public interface IListener : IDisposable
     {
-        Task<IDataSocket> AcceptAsync();
+        Task<IWorker> AcceptAsync();
     }
 }

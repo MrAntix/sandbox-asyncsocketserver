@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Sandbox.AsyncSocketServer.Abstraction
 {
-    public interface IDataSocket : IDisposable
+    public interface IWorker : IDisposable
     {
         Task<byte[]> ReceiveAsync();
 

@@ -4,13 +4,13 @@ using System.Runtime.Serialization;
 namespace Sandbox.AsyncSocketServer
 {
     [Serializable]
-    public class DataSocketFactoryException : Exception
+    public class WorkerFactoryException : Exception
     {
-        public DataSocketFactoryException()
+        public WorkerFactoryException()
         {
         }
 
-        protected DataSocketFactoryException(
+        protected WorkerFactoryException(
             SerializationInfo info,
             StreamingContext context)
             : base(info, context)
