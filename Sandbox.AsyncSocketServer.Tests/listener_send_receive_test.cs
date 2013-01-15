@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using Sandbox.AsyncSocketServer.Tests.Abstraction;
 using Xunit;
@@ -18,7 +19,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         }
 
         [Fact]
-        public async Task data_receieved()
+        public async Task client_sends_to_server_and_connection_closed()
         {
             var clientServer = CreateClient();
             using (clientServer.Client)
@@ -35,7 +36,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         }
 
         [Fact]
-        public async Task data_receieved_client_left_connected()
+        public async Task client_sends_to_server_with_terminator()
         {
             var clientServer = CreateClient();
 
@@ -50,7 +51,26 @@ namespace Sandbox.AsyncSocketServer.Tests
         }
 
         [Fact]
-        public async Task data_sent()
+        public async Task client_sends_to_server_large_amount_of_data()
+        {
+            var clientServer = CreateClient();
+            using (clientServer.Client)
+            {
+                var expected = new String('x', 100000);
+
+                clientServer.Client.Send(
+                    Encoding.ASCII.GetBytes(expected + Settings.Terminator));
+
+                // see what we get
+                var result = await clientServer.Server.ReceiveAsync();
+                var actual = Encoding.ASCII.GetString(result);
+
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Fact]
+        public async Task server_sends_to_client()
         {
             using (var clientServer = CreateClient())
             {
@@ -63,6 +83,27 @@ namespace Sandbox.AsyncSocketServer.Tests
                 var actual = Encoding.ASCII.GetString(buffer, 0, bytesReceived);
 
                 Assert.Equal(DataToSend, actual);
+            }
+        }
+
+        [Fact]
+        public async Task client_sends_to_server_a_number_of_times_on_the_same_connection()
+        {
+            using (var clientServer = CreateClient())
+            {
+                for (var i = 0; i < 10000; i++)
+                {
+                    var expected = string.Concat(DataToSend, i);
+
+                    clientServer.Client.Send(
+                        Encoding.ASCII.GetBytes(expected + Settings.Terminator));
+
+                    // see what we get
+                    var result = await clientServer.Server.ReceiveAsync();
+                    var actual = Encoding.ASCII.GetString(result);
+
+                    Assert.Equal(expected, actual);
+                }
             }
         }
     }
