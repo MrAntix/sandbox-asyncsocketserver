@@ -1,13 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Sandbox.AsyncSocketServer.Abstraction;
 
 namespace Sandbox.AsyncSocketServer
 {
+    public static class Extensions
+    {
+        public static async Task TimeoutAfter(this Task task, int millisecondsTimeout)
+        {
+            if (task == await Task.WhenAny(task, Task.Delay(millisecondsTimeout)))
+                await task;
+            else
+                throw new TimeoutException();
+        }
+    }
     public class Worker : IWorker
     {
         readonly Socket _socket;
@@ -30,38 +42,46 @@ namespace Sandbox.AsyncSocketServer
         {
             var data = new List<byte>();
 
-            while (true)
+            try
             {
-                _awaitable.Reset();
-                if (!_socket.ReceiveAsync(_awaitable.EventArgs))
-                    _awaitable.IsCompleted = true;
-
-                await _awaitable;
-
-                // get the place to start looking for the terminator
-                var terminatorIndexStart = data.Count > _terminator.Length
-                                     ? data.Count - _terminator.Length
-                                     : 0;
-
-                // check the number of bytes recieved
-                var bytesReceived = _awaitable.EventArgs.BytesTransferred;
-                if (bytesReceived <= 0) break;
-
-                // add the received data
-                data.AddRange(_awaitable.EventArgs
-                    .Buffer.Skip(_awaitable.EventArgs.Offset).Take(bytesReceived));
-
-                // look for a terminator
-                var terminatorIndex = GetTerminatorIndex(data, terminatorIndexStart);
-                if (terminatorIndex > -1)
+                while (true)
                 {
-                    // terminator found, return all data up to it
-                    return data.Take(terminatorIndex).ToArray();
-                }
-            }
+                    _awaitable.Reset();
+                    if (!_socket.ReceiveAsync(_awaitable.EventArgs))
+                        _awaitable.IsCompleted = true;
 
-            // client closed connection
-            return data.ToArray();
+                    await _awaitable;
+
+                    // get the place to start looking for the terminator
+                    var terminatorIndexStart = data.Count > _terminator.Length
+                                                   ? data.Count - _terminator.Length
+                                                   : 0;
+
+                    // check the number of bytes recieved
+                    var bytesReceived = _awaitable.EventArgs.BytesTransferred;
+                    if (bytesReceived <= 0) break;
+
+                    // add the received data
+                    data.AddRange(_awaitable.EventArgs
+                                            .Buffer.Skip(_awaitable.EventArgs.Offset).Take(bytesReceived));
+
+                    // look for a terminator
+                    var terminatorIndex = GetTerminatorIndex(data, terminatorIndexStart);
+                    if (terminatorIndex > -1)
+                    {
+                        // terminator found, return all data up to it
+                        return data.Take(terminatorIndex).ToArray();
+                    }
+                }
+                
+                // client closed connection
+                return data.ToArray();
+            }
+            catch (TimeoutException)
+            {
+                Dispose();
+                throw;
+            }
         }
 
         public async Task SendAsync(byte[] data)
@@ -96,6 +116,8 @@ namespace Sandbox.AsyncSocketServer
 
         #region dispose
 
+        public bool Disposed { get; private set; }
+
         public void Dispose()
         {
             Dispose(true);
@@ -104,13 +126,14 @@ namespace Sandbox.AsyncSocketServer
 
         protected virtual void Dispose(bool disposing)
         {
-            if (_disposed) return;
+            if (Disposed) return;
 
             if (disposing)
             {
                 try
                 {
                     _socket.Shutdown(SocketShutdown.Both);
+                    Debug.WriteLine("socket shutdown");
                 }
                 catch (Exception)
                 {
@@ -119,7 +142,7 @@ namespace Sandbox.AsyncSocketServer
             }
 
             _release();
-            _disposed = true;
+            Disposed = true;
         }
 
         ~Worker()
@@ -127,7 +150,6 @@ namespace Sandbox.AsyncSocketServer
             Dispose(false);
         }
 
-        bool _disposed;
 
         #endregion
     }

@@ -21,7 +21,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         [Fact]
         public async Task client_sends_to_server_and_connection_closed()
         {
-            var clientServer = CreateClient();
+            var clientServer = CreateClientServer();
             using (clientServer.Client)
             {
                 clientServer.Client.Send(
@@ -38,7 +38,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         [Fact]
         public async Task client_sends_to_server_with_terminator()
         {
-            var clientServer = CreateClient();
+            var clientServer = CreateClientServer();
 
             clientServer.Client.Send(
                 Encoding.ASCII.GetBytes(DataToSend + Settings.Terminator));
@@ -53,7 +53,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         [Fact]
         public async Task client_sends_to_server_large_amount_of_data()
         {
-            var clientServer = CreateClient();
+            var clientServer = CreateClientServer();
             using (clientServer.Client)
             {
                 var expected = new String('x', 10000000);
@@ -72,7 +72,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         [Fact]
         public async Task server_sends_to_client()
         {
-            using (var clientServer = CreateClient())
+            using (var clientServer = CreateClientServer())
             {
                 await clientServer.Server.SendAsync(
                     Encoding.ASCII.GetBytes(DataToSend));
@@ -89,7 +89,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         [Fact]
         public async Task client_sends_to_server_a_number_of_times_on_the_same_connection()
         {
-            using (var clientServer = CreateClient())
+            using (var clientServer = CreateClientServer())
             {
                 for (var i = 0; i < 10000; i++)
                 {

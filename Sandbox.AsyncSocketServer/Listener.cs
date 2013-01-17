@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using Sandbox.AsyncSocketServer.Abstraction;
 
@@ -26,7 +27,7 @@ namespace Sandbox.AsyncSocketServer
             permission.Demand();
 
             // create awaitable
-            _awaitable = new SocketAwaitable();
+            _awaitable = new SocketAwaitable(Timeout.InfiniteTimeSpan);
 
             // create a tcp socket to listen
             _socket = new Socket(

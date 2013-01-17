@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Net.Sockets;
 using Sandbox.AsyncSocketServer.Abstraction;
@@ -13,7 +14,7 @@ namespace Sandbox.AsyncSocketServer
 
         public WorkerFactory(
             IBufferManager bufferManager,
-            string terminator)
+            string terminator, TimeSpan timeout)
         {
             _bufferManager = bufferManager;
             _terminator = terminator;
@@ -21,7 +22,7 @@ namespace Sandbox.AsyncSocketServer
             // create event arg pool
             _awaitablesPool = new ConcurrentStack<SocketAwaitable>(
                 Enumerable.Range(0, bufferManager.MaximumAllocations)
-                          .Select(i => new SocketAwaitable()));
+                          .Select(i => new SocketAwaitable(timeout)));
         }
 
         public IWorker Create(Socket socket)

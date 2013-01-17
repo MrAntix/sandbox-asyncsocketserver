@@ -24,7 +24,7 @@ namespace Sandbox.AsyncSocketServer.Tests
             var clientServers = new List<ClientServer>();
 
             for (var i = 0; i < Settings.MaxConnections; i++)
-                clientServers.Add(CreateClient());
+                clientServers.Add(CreateClientServer());
 
             var message = Encoding.ASCII.GetBytes("Hello World" + Settings.Terminator);
 
@@ -39,11 +39,11 @@ namespace Sandbox.AsyncSocketServer.Tests
             var clientServers = new List<ClientServer>();
 
             for (var i = 0; i < Settings.MaxConnections; i++)
-                clientServers.Add(CreateClient());
+                clientServers.Add(CreateClientServer());
 
             try
             {
-                CreateClient();
+                CreateClientServer();
 
                 throw new Exception("expected exception");
             }

@@ -13,6 +13,8 @@ namespace Sandbox.AsyncSocketServer.Tests.Abstraction
             public string Terminator = "\n\n";
             public int MaxConnections = 1;
             public int BufferSize = 1024;
+
+            public TimeSpan Timeout = TimeSpan.FromSeconds(2);
         }
 
         protected readonly TestSettings Settings;
@@ -32,14 +34,15 @@ namespace Sandbox.AsyncSocketServer.Tests.Abstraction
             _ipAddress = ipHostInfo.AddressList[1];
 
             _manager = new BufferManager(Settings.MaxConnections, Settings.BufferSize);
-            var dataSocketFactory = new WorkerFactory(_manager, Settings.Terminator);
+            var dataSocketFactory = new WorkerFactory(
+                _manager, Settings.Terminator, Settings.Timeout);
 
             _listener = new Listener(
                 new ListenerSettings(_ipAddress, ++_port),
                 dataSocketFactory.Create);
         }
 
-        protected ClientServer CreateClient()
+        protected ClientServer CreateClientServer()
         {
             var acceptTask = _listener.AcceptAsync();
 

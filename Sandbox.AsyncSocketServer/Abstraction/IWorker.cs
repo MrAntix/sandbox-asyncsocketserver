@@ -8,5 +8,7 @@ namespace Sandbox.AsyncSocketServer.Abstraction
         Task<byte[]> ReceiveAsync();
 
         Task SendAsync(byte[] data);
+
+        bool Disposed { get; }
     }
 }
