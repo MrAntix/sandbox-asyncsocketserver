@@ -15,16 +15,14 @@ namespace Sandbox.AsyncSocketServer
         public SocketAwaitable(TimeSpan timeout)
         {
             _timeout = timeout;
+
             if (_timeout.Ticks != 0
                 || _timeout == Timeout.InfiniteTimeSpan)
             {
-                _timer = new Timer(s =>
-                {
-                    var awaitable = (SocketAwaitable)s;
-                    awaitable.IsTimedOut = true;
-                    awaitable.IsCompleted = true;
-                    awaitable.StopTimer();
-                }, this, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+                // create the timer object, disabled
+                _timer = new Timer(
+                    s => ((SocketAwaitable)s).TimedOut(), 
+                    this, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             }
 
             EventArgs = new SocketAsyncEventArgs();
@@ -45,8 +43,8 @@ namespace Sandbox.AsyncSocketServer
 
         internal void Reset()
         {
-            IsCompleted = false;
             _continuation = null;
+            IsCompleted = false;
             StopTimer();
         }
 
@@ -103,6 +101,13 @@ namespace Sandbox.AsyncSocketServer
         {
             if (_timer != null)
                 _timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+        }
+
+        void TimedOut()
+        {
+            IsTimedOut = true;
+            IsCompleted = true;
+            StopTimer();
         }
 
         #endregion
