@@ -42,16 +42,20 @@ namespace Sandbox.AsyncSocketServer
         {
             var data = new List<byte>();
 
-            try
+            while (!Disposed)
             {
-                while (true)
+                _awaitable.Reset();
+                if (!_socket.ReceiveAsync(_awaitable.EventArgs))
+                    _awaitable.IsCompleted = true;
+
+                await _awaitable;
+
+                if (_awaitable.IsTimedOut)
                 {
-                    _awaitable.Reset();
-                    if (!_socket.ReceiveAsync(_awaitable.EventArgs))
-                        _awaitable.IsCompleted = true;
-
-                    await _awaitable;
-
+                    Dispose();
+                }
+                else
+                {
                     // get the place to start looking for the terminator
                     var terminatorIndexStart = data.Count > _terminator.Length
                                                    ? data.Count - _terminator.Length
@@ -73,15 +77,10 @@ namespace Sandbox.AsyncSocketServer
                         return data.Take(terminatorIndex).ToArray();
                     }
                 }
-                
-                // client closed connection
-                return data.ToArray();
             }
-            catch (TimeoutException)
-            {
-                Dispose();
-                throw;
-            }
+
+            // client closed connection
+            return data.ToArray();
         }
 
         public async Task SendAsync(byte[] data)

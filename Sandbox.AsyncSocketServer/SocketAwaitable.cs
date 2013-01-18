@@ -11,7 +11,6 @@ namespace Sandbox.AsyncSocketServer
         static readonly Action Sentinel = () => { };
 
         Action _continuation;
-        Exception _exception;
         readonly TimeSpan _timeout;
         Timer _timer;
 
@@ -50,21 +49,24 @@ namespace Sandbox.AsyncSocketServer
 
             if (_timeout.Ticks == 0)
             {
-                _exception = new TimeoutException();
+                IsTimedOut = true;
                 IsCompleted = true;
             }
-
-            _timer = new Timer(s =>
-                {
-                    var awaitable = (SocketAwaitable) s;
-                    awaitable._exception = new TimeoutException();
-                    awaitable.IsCompleted = true;
-                }, this, _timeout, Timeout.InfiniteTimeSpan);
+            else
+            {
+                _timer = new Timer(s =>
+                    {
+                        var awaitable = (SocketAwaitable) s;
+                        awaitable.IsTimedOut = true;
+                        awaitable.IsCompleted = true;
+                    }, this, _timeout, Timeout.InfiniteTimeSpan);
+            }
 
             return this;
         }
 
         public bool IsCompleted { get; internal set; }
+        public bool IsTimedOut { get; private set; }
 
         public SocketAsyncEventArgs EventArgs { get; private set; }
 
@@ -80,8 +82,6 @@ namespace Sandbox.AsyncSocketServer
 
         public void GetResult()
         {
-            if (_exception != null) throw _exception;
-
             if (EventArgs.SocketError != SocketError.Success)
                 throw new SocketException((int) EventArgs.SocketError);
         }
