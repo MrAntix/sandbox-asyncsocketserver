@@ -11,35 +11,43 @@ namespace Sandbox.AsyncSocketServer
         static readonly Action Sentinel = () => { };
 
         Action _continuation;
-        readonly TimeSpan _timeout;
-        Timer _timer;
 
         public SocketAwaitable(TimeSpan timeout)
         {
             _timeout = timeout;
+            if (_timeout.Ticks != 0
+                || _timeout == Timeout.InfiniteTimeSpan)
+            {
+                _timer = new Timer(s =>
+                {
+                    var awaitable = (SocketAwaitable)s;
+                    awaitable.IsTimedOut = true;
+                    awaitable.IsCompleted = true;
+                    awaitable.StopTimer();
+                }, this, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+            }
 
             EventArgs = new SocketAsyncEventArgs();
             EventArgs.Completed += delegate
+            {
+                if (_timer != null)
                 {
-                    if (_timer != null)
-                    {
-                        _timer.Dispose();
-                        _timer = null;
-                    }
+                    StopTimer();
+                }
 
-                    var prev = _continuation
-                               ?? Interlocked
-                                      .CompareExchange(ref _continuation, Sentinel, null);
+                var prev = _continuation
+                           ?? Interlocked
+                                  .CompareExchange(ref _continuation, Sentinel, null);
 
-                    if (prev != null) prev();
-                };
+                if (prev != null) prev();
+            };
         }
 
         internal void Reset()
         {
             IsCompleted = false;
             _continuation = null;
-            _timer = null;
+            StopTimer();
         }
 
         public SocketAwaitable GetAwaiter()
@@ -54,12 +62,7 @@ namespace Sandbox.AsyncSocketServer
             }
             else
             {
-                _timer = new Timer(s =>
-                    {
-                        var awaitable = (SocketAwaitable) s;
-                        awaitable.IsTimedOut = true;
-                        awaitable.IsCompleted = true;
-                    }, this, _timeout, Timeout.InfiniteTimeSpan);
+                StartTimer();
             }
 
             return this;
@@ -83,7 +86,25 @@ namespace Sandbox.AsyncSocketServer
         public void GetResult()
         {
             if (EventArgs.SocketError != SocketError.Success)
-                throw new SocketException((int) EventArgs.SocketError);
+                throw new SocketException((int)EventArgs.SocketError);
         }
+
+        #region timer
+
+        readonly TimeSpan _timeout;
+        readonly Timer _timer;
+
+        void StartTimer()
+        {
+            _timer.Change(_timeout, Timeout.InfiniteTimeSpan);
+        }
+
+        void StopTimer()
+        {
+            if (_timer != null)
+                _timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+        }
+
+        #endregion
     }
 }

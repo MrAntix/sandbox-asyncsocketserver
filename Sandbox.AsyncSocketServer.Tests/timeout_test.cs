@@ -39,7 +39,7 @@ namespace Sandbox.AsyncSocketServer.Tests
             Assert.Throws<SocketException>(() =>
                 {
                     var loop = 1;
-                    while (loop++ < 10)
+                    while (loop++ < 20)
                     {
                         Thread.Sleep(loop);
                         clientServer.Client.Send(
