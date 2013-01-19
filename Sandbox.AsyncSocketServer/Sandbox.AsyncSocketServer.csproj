@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstraction\IListenerSocket.cs" />
     <Compile Include="BufferManager.cs" />
     <Compile Include="BufferAllocation.cs" />
     <Compile Include="BufferMaximumAllocationsExceededException.cs" />

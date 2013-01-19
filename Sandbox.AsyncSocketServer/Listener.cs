@@ -9,38 +9,32 @@ namespace Sandbox.AsyncSocketServer
 {
     public class Listener : IListener
     {
-        readonly Socket _socket;
         readonly SocketAwaitable _awaitable;
 
-        readonly Func<Socket, IWorker> _createDataSocket;
+        readonly IListenerSocket _listenerSocket;
+        readonly Func<Socket, IWorker> _createWorker;
 
         public Listener(
-            ListenerSettings settings,
-            Func<Socket, IWorker> createDataSocket)
+            ListenerSettings settings, 
+            IListenerSocket listenerSocket,
+            Func<Socket, IWorker> createWorker)
         {
-            _createDataSocket = createDataSocket;
-
-            // demand permission
-            var permission = new SocketPermission(
-                NetworkAccess.Connect, TransportType.Tcp,
-                settings.IPAddress.ToString(), settings.Port);
-            permission.Demand();
+            _createWorker = createWorker;
+            _listenerSocket = listenerSocket;
 
             // create awaitable
             _awaitable = new SocketAwaitable(Timeout.InfiniteTimeSpan);
 
-            // create a tcp socket to listen
-            _socket = new Socket(
-                AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-            _socket.Bind(new IPEndPoint(settings.IPAddress, settings.Port));
-            _socket.Listen(settings.Backlog);
+            _listenerSocket
+                .Listen(
+                    new IPEndPoint(settings.IPAddress, settings.Port),
+                    settings.Backlog);
         }
 
         public async Task<IWorker> AcceptAsync()
         {
             _awaitable.Reset();
-            if (!_socket.AcceptAsync(_awaitable.EventArgs))
+            if (!_listenerSocket.AcceptAsync(_awaitable.EventArgs))
                 _awaitable.IsCompleted = true;
 
             await _awaitable;
@@ -48,7 +42,7 @@ namespace Sandbox.AsyncSocketServer
             var socket = _awaitable.EventArgs.AcceptSocket;
             _awaitable.EventArgs.AcceptSocket = null;
 
-            return _createDataSocket(socket);
+            return _createWorker(socket);
         }
 
         #region dispose
@@ -65,9 +59,9 @@ namespace Sandbox.AsyncSocketServer
 
             if (disposing)
             {
-                if (_socket != null)
+                if (_listenerSocket != null)
                 {
-                    _socket.Dispose();
+                    _listenerSocket.Dispose();
                 }
             }
 
