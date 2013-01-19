@@ -15,7 +15,7 @@ namespace Sandbox.AsyncSocketServer
         readonly Func<Socket, IWorker> _createWorker;
 
         public Listener(
-            ListenerSettings settings, 
+            ListenerSettings settings,
             IListenerSocket listenerSocket,
             Func<Socket, IWorker> createWorker)
         {

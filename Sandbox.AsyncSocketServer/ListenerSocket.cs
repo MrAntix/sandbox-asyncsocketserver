@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using Sandbox.AsyncSocketServer.Abstraction;
 
-namespace Sandbox.AsyncSocketServer.Abstraction
+namespace Sandbox.AsyncSocketServer
 {
     public class ListenerSocket : IListenerSocket
     {
@@ -61,6 +62,5 @@ namespace Sandbox.AsyncSocketServer.Abstraction
         bool _disposed;
 
         #endregion
-
     }
 }

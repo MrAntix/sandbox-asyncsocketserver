@@ -3,7 +3,6 @@ using Sandbox.AsyncSocketServer.Abstraction;
 
 namespace Sandbox.AsyncSocketServer
 {
-
     public class BufferManager : IBufferManager
     {
         readonly byte[] _buffers;

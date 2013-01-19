@@ -21,24 +21,24 @@ namespace Sandbox.AsyncSocketServer
             {
                 // create the timer object, disabled
                 _timer = new Timer(
-                    s => ((SocketAwaitable)s).TimedOut(), 
+                    s => ((SocketAwaitable) s).TimedOut(),
                     this, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             }
 
             EventArgs = new SocketAsyncEventArgs();
             EventArgs.Completed += delegate
-            {
-                if (_timer != null)
                 {
-                    StopTimer();
-                }
+                    if (_timer != null)
+                    {
+                        StopTimer();
+                    }
 
-                var prev = _continuation
-                           ?? Interlocked
-                                  .CompareExchange(ref _continuation, Sentinel, null);
+                    var prev = _continuation
+                               ?? Interlocked
+                                      .CompareExchange(ref _continuation, Sentinel, null);
 
-                if (prev != null) prev();
-            };
+                    if (prev != null) prev();
+                };
         }
 
         internal void Reset()
@@ -84,7 +84,7 @@ namespace Sandbox.AsyncSocketServer
         public void GetResult()
         {
             if (EventArgs.SocketError != SocketError.Success)
-                throw new SocketException((int)EventArgs.SocketError);
+                throw new SocketException((int) EventArgs.SocketError);
         }
 
         #region timer
