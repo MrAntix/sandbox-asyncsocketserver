@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Net.Sockets;
 using Sandbox.AsyncSocketServer.Abstraction;
 
 namespace Sandbox.AsyncSocketServer
@@ -25,7 +24,7 @@ namespace Sandbox.AsyncSocketServer
                           .Select(i => new SocketAwaitable(timeout)));
         }
 
-        public IWorker Create(Socket socket)
+        public IWorker Create(IWorkerSocket socket)
         {
             SocketAwaitable awaitable;
             if (!_awaitablesPool.TryPop(out awaitable))

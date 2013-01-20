@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net.Sockets;
 using System.Threading.Tasks;
 using Sandbox.AsyncSocketServer.Abstraction;
 
@@ -10,13 +8,13 @@ namespace Sandbox.AsyncSocketServer
 {
     public class Worker : IWorker
     {
-        readonly Socket _socket;
+        readonly IWorkerSocket _socket;
         readonly SocketAwaitable _awaitable;
         readonly string _terminator;
         readonly Action _release;
 
         public Worker(
-            Socket socket, SocketAwaitable awaitable,
+            IWorkerSocket socket, SocketAwaitable awaitable,
             string terminator,
             Action release)
         {
@@ -117,15 +115,7 @@ namespace Sandbox.AsyncSocketServer
 
             if (disposing)
             {
-                try
-                {
-                    _socket.Shutdown(SocketShutdown.Both);
-                    Debug.WriteLine("socket shutdown");
-                }
-                catch (Exception)
-                {
-                }
-                _socket.Close();
+                _socket.Dispose();
             }
 
             _release();

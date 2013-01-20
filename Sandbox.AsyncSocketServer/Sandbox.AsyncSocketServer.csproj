@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstraction\IWorkerSocket.cs" />
     <Compile Include="Abstraction\IListenerSocket.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="ListenerSocket.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="ListenerSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SocketAwaitable.cs" />
+    <Compile Include="WorkerSocket.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
