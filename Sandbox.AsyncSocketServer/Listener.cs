@@ -9,32 +9,46 @@ namespace Sandbox.AsyncSocketServer
 {
     public class Listener : IListener
     {
+        readonly Socket _socket;
         readonly SocketAwaitable _awaitable;
 
-        readonly IListenerSocket _listenerSocket;
         readonly Func<Socket, IWorker> _createWorker;
 
         public Listener(
             ListenerSettings settings,
-            IListenerSocket listenerSocket,
             Func<Socket, IWorker> createWorker)
         {
             _createWorker = createWorker;
-            _listenerSocket = listenerSocket;
 
             // create awaitable
             _awaitable = new SocketAwaitable(Timeout.InfiniteTimeSpan);
 
-            _listenerSocket
-                .Listen(
-                    new IPEndPoint(settings.IPAddress, settings.Port),
-                    settings.Backlog);
+            _socket = CreateBoundSocket(
+                new IPEndPoint(settings.IPAddress, settings.Port));
+            _socket.Listen(settings.Backlog);
+        }
+
+        Socket CreateBoundSocket(IPEndPoint endpoint)
+        {
+            // demand permission
+            var permission = new SocketPermission(
+                NetworkAccess.Connect, TransportType.Tcp,
+                endpoint.Address.ToString(), endpoint.Port);
+            permission.Demand();
+
+            // create a tcp socket to listen
+            var socket = new Socket(
+                AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+            socket.Bind(endpoint);
+
+            return socket;
         }
 
         public async Task<IWorker> AcceptAsync()
         {
             _awaitable.Reset();
-            if (!_listenerSocket.AcceptAsync(_awaitable.EventArgs))
+            if (!_socket.AcceptAsync(_awaitable.EventArgs))
                 _awaitable.IsCompleted = true;
 
             await _awaitable;
@@ -59,10 +73,7 @@ namespace Sandbox.AsyncSocketServer
 
             if (disposing)
             {
-                if (_listenerSocket != null)
-                {
-                    _listenerSocket.Dispose();
-                }
+                _socket.Dispose();
             }
 
             _disposed = true;

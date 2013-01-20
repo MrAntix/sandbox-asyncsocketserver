@@ -39,7 +39,6 @@ namespace Sandbox.AsyncSocketServer.Tests.Abstraction
 
             _listener = new Listener(
                 new ListenerSettings(_ipAddress, ++_port),
-                new ListenerSocket(),
                 s => dataSocketFactory.Create(new WorkerSocket(s)));
         }
 

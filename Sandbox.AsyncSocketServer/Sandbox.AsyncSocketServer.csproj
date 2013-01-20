@@ -40,9 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstraction\IWorkerSocket.cs" />
-    <Compile Include="Abstraction\IListenerSocket.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="ListenerSocket.cs" />
     <Compile Include="BufferManager.cs" />
     <Compile Include="BufferAllocation.cs" />
     <Compile Include="BufferMaximumAllocationsExceededException.cs" />
