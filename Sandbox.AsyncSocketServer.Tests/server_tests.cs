@@ -12,14 +12,17 @@ namespace Sandbox.AsyncSocketServer.Tests
         {
             using (var server = GetServer())
             {
+                server.Start(GetListener(), GetHandler());
+
                 var process = server
                     .Start(GetListener(), GetHandler());
 
-                Assert.Equal(1, server.Processes.Count());
+                Assert.Equal(2, server.Processes.Count());
 
                 process.Dispose();
 
-                Assert.Equal(0, server.Processes.Count());
+                Assert.Equal(1, server.Processes.Count());
+                Assert.DoesNotContain(process, server.Processes);
             }
         }
 
@@ -29,8 +32,9 @@ namespace Sandbox.AsyncSocketServer.Tests
             var server = GetServer();
 
             server.Start(GetListener(), GetHandler());
+            server.Start(GetListener(), GetHandler());
 
-            Assert.Equal(1, server.Processes.Count());
+            Assert.Equal(2, server.Processes.Count());
 
             server.Dispose();
 
