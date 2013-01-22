@@ -34,8 +34,7 @@ namespace Sandbox.AsyncSocketServer.Tests.Abstraction
             _ipAddress = ipHostInfo.AddressList[1];
 
             _manager = new BufferManager(Settings.MaxConnections, Settings.BufferSize);
-            var workerFactory = new WorkerFactory(
-                _manager, Settings.Terminator, Settings.Timeout);
+            var workerFactory = new WorkerFactory(_manager, Settings.Timeout);
 
             _listener = new Listener(
                 new ListenerSettings(_ipAddress, ++_port),

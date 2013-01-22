@@ -28,7 +28,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                     Encoding.ASCII.GetBytes(DataToSend + Settings.Terminator));
 
                 // see what we get
-                var result = await clientServer.Server.ReceiveAsync();
+                var result = await clientServer.Server.ReceiveAsync(Settings.Terminator);
                 var actual = Encoding.ASCII.GetString(result);
 
                 Assert.Equal(DataToSend, actual);
@@ -44,7 +44,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                 Encoding.ASCII.GetBytes(DataToSend + Settings.Terminator));
 
             // see what we get
-            var result = await clientServer.Server.ReceiveAsync();
+            var result = await clientServer.Server.ReceiveAsync(Settings.Terminator);
             var actual = Encoding.ASCII.GetString(result);
 
             Assert.Equal(DataToSend, actual);
@@ -62,7 +62,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                     Encoding.ASCII.GetBytes(expected + Settings.Terminator));
 
                 // see what we get
-                var result = await clientServer.Server.ReceiveAsync();
+                var result = await clientServer.Server.ReceiveAsync(Settings.Terminator);
                 var actual = Encoding.ASCII.GetString(result);
 
                 Assert.Equal(expected, actual);
@@ -99,7 +99,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                         Encoding.ASCII.GetBytes(expected + Settings.Terminator));
 
                     // see what we get
-                    var result = await clientServer.Server.ReceiveAsync();
+                    var result = await clientServer.Server.ReceiveAsync(Settings.Terminator);
                     var actual = Encoding.ASCII.GetString(result);
 
                     Assert.Equal(expected, actual);

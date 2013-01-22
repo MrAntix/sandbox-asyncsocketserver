@@ -9,14 +9,12 @@ namespace Sandbox.AsyncSocketServer
     {
         readonly IBufferManager _bufferManager;
         readonly ConcurrentStack<SocketAwaitable> _awaitablesPool;
-        readonly string _terminator;
 
         public WorkerFactory(
             IBufferManager bufferManager,
-            string terminator, TimeSpan timeout)
+            TimeSpan timeout)
         {
             _bufferManager = bufferManager;
-            _terminator = terminator;
 
             // create event arg pool
             _awaitablesPool = new ConcurrentStack<SocketAwaitable>(
@@ -38,7 +36,6 @@ namespace Sandbox.AsyncSocketServer
 
             return new Worker(
                 socket, awaitable,
-                _terminator,
                 () =>
                     {
                         _awaitablesPool.Push(awaitable);

@@ -10,21 +10,18 @@ namespace Sandbox.AsyncSocketServer
     {
         readonly IWorkerSocket _socket;
         readonly SocketAwaitable _awaitable;
-        readonly string _terminator;
         readonly Action _release;
 
         public Worker(
             IWorkerSocket socket, SocketAwaitable awaitable,
-            string terminator,
             Action release)
         {
             _socket = socket;
             _awaitable = awaitable;
             _release = release;
-            _terminator = terminator;
         }
 
-        public async Task<byte[]> ReceiveAsync()
+        public async Task<byte[]> ReceiveAsync(string terminator)
         {
             var data = new List<byte>();
 
@@ -43,8 +40,8 @@ namespace Sandbox.AsyncSocketServer
                 else
                 {
                     // get the place to start looking for the terminator
-                    var terminatorIndexStart = data.Count > _terminator.Length
-                                                   ? data.Count - _terminator.Length
+                    var terminatorIndexStart = data.Count > terminator.Length
+                                                   ? data.Count - terminator.Length
                                                    : 0;
 
                     // check the number of bytes recieved
@@ -56,7 +53,7 @@ namespace Sandbox.AsyncSocketServer
                                             .Buffer.Skip(_awaitable.EventArgs.Offset).Take(bytesReceived));
 
                     // look for a terminator
-                    var terminatorIndex = GetTerminatorIndex(data, terminatorIndexStart);
+                    var terminatorIndex = GetTerminatorIndex(data, terminator, terminatorIndexStart);
                     if (terminatorIndex > -1)
                     {
                         // terminator found, return all data up to it
@@ -80,7 +77,7 @@ namespace Sandbox.AsyncSocketServer
             await _awaitable;
         }
 
-        int GetTerminatorIndex(IReadOnlyList<byte> data, int startIndex)
+        int GetTerminatorIndex(IReadOnlyList<byte> data, string terminator, int startIndex)
         {
             if (data == null)
                 throw new ArgumentNullException("data");
@@ -88,11 +85,11 @@ namespace Sandbox.AsyncSocketServer
             for (var dataIndex = startIndex; dataIndex < data.Count; dataIndex++)
             {
                 if (Enumerable
-                    .Range(0, _terminator.Length)
+                    .Range(0, terminator.Length)
                     .All(
                         terminatorIndex =>
                         dataIndex + terminatorIndex < data.Count
-                        && data[dataIndex + terminatorIndex] == _terminator[terminatorIndex]))
+                        && data[dataIndex + terminatorIndex] == terminator[terminatorIndex]))
                     return dataIndex;
             }
 

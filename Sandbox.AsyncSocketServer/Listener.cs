@@ -28,7 +28,21 @@ namespace Sandbox.AsyncSocketServer
             _socket.Listen(settings.Backlog);
         }
 
-        Socket CreateBoundSocket(IPEndPoint endpoint)
+        public async Task<IWorker> AcceptAsync()
+        {
+            _awaitable.Reset();
+            if (!_socket.AcceptAsync(_awaitable.EventArgs))
+                _awaitable.IsCompleted = true;
+
+            await _awaitable;
+
+            var socket = _awaitable.EventArgs.AcceptSocket;
+            _awaitable.EventArgs.AcceptSocket = null;
+
+            return _createWorker(socket);
+        }
+        
+        static Socket CreateBoundSocket(IPEndPoint endpoint)
         {
             // demand permission
             var permission = new SocketPermission(
@@ -43,20 +57,6 @@ namespace Sandbox.AsyncSocketServer
             socket.Bind(endpoint);
 
             return socket;
-        }
-
-        public async Task<IWorker> AcceptAsync()
-        {
-            _awaitable.Reset();
-            if (!_socket.AcceptAsync(_awaitable.EventArgs))
-                _awaitable.IsCompleted = true;
-
-            await _awaitable;
-
-            var socket = _awaitable.EventArgs.AcceptSocket;
-            _awaitable.EventArgs.AcceptSocket = null;
-
-            return _createWorker(socket);
         }
 
         #region dispose

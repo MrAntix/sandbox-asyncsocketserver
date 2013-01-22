@@ -31,7 +31,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                 {
                     while (!server.Disposed)
                     {
-                        var result = server.ReceiveAsync().Result;
+                        var result = server.ReceiveAsync(Settings.Terminator).Result;
                         Debug.WriteLine(Encoding.ASCII.GetString(result));
                     }
                 }).Start();

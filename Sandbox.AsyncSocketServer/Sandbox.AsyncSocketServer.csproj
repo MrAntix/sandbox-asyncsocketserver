@@ -39,11 +39,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstraction\IMessageHandler.cs" />
+    <Compile Include="Abstraction\IServer.cs" />
+    <Compile Include="ServerProcess.cs" />
     <Compile Include="Abstraction\IWorkerSocket.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="BufferManager.cs" />
     <Compile Include="BufferAllocation.cs" />
     <Compile Include="BufferMaximumAllocationsExceededException.cs" />
+    <Compile Include="HttpMessageHandler.cs" />
+    <Compile Include="Server.cs" />
     <Compile Include="Worker.cs" />
     <Compile Include="WorkerFactory.cs" />
     <Compile Include="Abstraction\IBufferManager.cs" />
