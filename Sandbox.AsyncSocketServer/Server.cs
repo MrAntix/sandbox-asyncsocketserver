@@ -19,9 +19,9 @@ namespace Sandbox.AsyncSocketServer
             IMessageHandler handler)
         {
             var process = new ServerProcess(listener, handler);
-            process.Start(Stop);
-
             lock (LockObject) _bag.Add(process);
+
+            process.Start(Stop);
 
             return process;
         }
