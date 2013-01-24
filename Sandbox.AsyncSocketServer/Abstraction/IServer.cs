@@ -5,8 +5,8 @@ namespace Sandbox.AsyncSocketServer.Abstraction
 {
     public interface IServer : IDisposable
     {
-        ServerProcess Start(IListener listener, IMessageHandler handler);
-        void Stop(ServerProcess process);
+        void Add(ServerProcess process);
+        void Remove(ServerProcess process);
 
         IEnumerable<ServerProcess> Processes { get; }
     }

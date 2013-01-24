@@ -7,25 +7,42 @@ namespace Sandbox.AsyncSocketServer
     {
         readonly IListener _listener;
         readonly IMessageHandler _handler;
-        Action<ServerProcess> _release;
 
         public ServerProcess(
             IListener listener, IMessageHandler handler
             )
         {
+            if (listener == null) throw new ArgumentNullException("listener");
+            if (handler == null) throw new ArgumentNullException("handler");
+
             _listener = listener;
             _handler = handler;
         }
 
-        public async void Start(Action<ServerProcess> release)
+        public bool IsStarted { get; private set; }
+
+        public IServer Server { get; set; }
+
+        public void Start()
         {
-            if (release == null) throw new ArgumentNullException("release");
-
-            if (_release != null)
+            if (IsStarted)
                 throw new InvalidOperationException();
-            _release = release;
 
-            while (_release != null)
+            IsStarted = true;
+            Run();
+        }
+
+        public void Stop()
+        {
+            if (!IsStarted)
+                throw new InvalidOperationException();
+
+            IsStarted = false;
+        }
+
+        async void Run()
+        {
+            while (IsStarted)
             {
                 // get the next connection
                 var worker = await _listener.AcceptAsync();
@@ -35,15 +52,6 @@ namespace Sandbox.AsyncSocketServer
                 var processedData = await _handler.ProcessAsync(data);
                 await worker.SendAsync(processedData);
             }
-        }
-
-        public void Stop()
-        {
-            if (_release == null)
-                throw new InvalidOperationException();
-
-            _release(this);
-            _release = null;
         }
 
         #region dispose
@@ -60,7 +68,8 @@ namespace Sandbox.AsyncSocketServer
 
             if (disposing)
             {
-                Stop();
+                if (IsStarted) Stop();
+                if (Server != null) Server.Remove(this);
             }
 
             _disposed = true;

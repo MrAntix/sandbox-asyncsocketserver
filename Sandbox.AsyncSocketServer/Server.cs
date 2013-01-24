@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Sandbox.AsyncSocketServer.Abstraction;
 
 namespace Sandbox.AsyncSocketServer
 {
     public class Server : IServer
     {
-        readonly List<ServerProcess> _bag = new List<ServerProcess>();
+        readonly HashSet<ServerProcess> _bag = new HashSet<ServerProcess>();
         static readonly object LockObject = new Object();
 
         IEnumerable<ServerProcess> IServer.Processes
@@ -14,21 +15,16 @@ namespace Sandbox.AsyncSocketServer
             get { return _bag; }
         }
 
-        ServerProcess IServer.Start(
-            IListener listener,
-            IMessageHandler handler)
+        void IServer.Add(ServerProcess process)
         {
-            var process = new ServerProcess(listener, handler);
             lock (LockObject) _bag.Add(process);
-
-            process.Start(Stop);
-
-            return process;
+            process.Server = this;
         }
 
-        public void Stop(ServerProcess process)
+        void IServer.Remove(ServerProcess process)
         {
             lock (LockObject) _bag.Remove(process);
+            process.Server = null;
         }
 
         #region dispose
@@ -45,7 +41,8 @@ namespace Sandbox.AsyncSocketServer
 
             if (disposing)
             {
-                foreach (var process in _bag.ToArray()) process.Dispose();
+                foreach (var process in _bag.ToArray()) 
+                    process.Dispose();
             }
 
             _disposed = true;

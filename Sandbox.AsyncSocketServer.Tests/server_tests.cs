@@ -8,14 +8,39 @@ namespace Sandbox.AsyncSocketServer.Tests
     public class server_tests
     {
         [Fact]
+        public void add_process_sets_server()
+        {
+            using (var server = GetServer())
+            {
+                var process = new ServerProcess(GetListener(), GetHandler());
+                server.Add(process);
+
+                Assert.Equal(server, process.Server);
+            }
+        }
+
+        [Fact]
+        public void remove_process_sets_server_to_null()
+        {
+            using (var server = GetServer())
+            {
+                var process = new ServerProcess(GetListener(), GetHandler());
+                server.Add(process);
+
+                server.Remove(process);
+                Assert.Null(process.Server);
+            }
+        }
+
+        [Fact]
         public void disposed_process_is_removed()
         {
             using (var server = GetServer())
             {
-                server.Start(GetListener(), GetHandler());
+                server.Add(new ServerProcess(GetListener(), GetHandler()));
 
-                var process = server
-                    .Start(GetListener(), GetHandler());
+                var process = new ServerProcess(GetListener(), GetHandler());
+                server.Add(process);
 
                 Assert.Equal(2, server.Processes.Count());
 
@@ -31,8 +56,8 @@ namespace Sandbox.AsyncSocketServer.Tests
         {
             var server = GetServer();
 
-            server.Start(GetListener(), GetHandler());
-            server.Start(GetListener(), GetHandler());
+            server.Add(new ServerProcess(GetListener(), GetHandler()));
+            server.Add(new ServerProcess(GetListener(), GetHandler()));
 
             Assert.Equal(2, server.Processes.Count());
 
