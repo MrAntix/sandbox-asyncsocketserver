@@ -15,6 +15,11 @@ namespace Sandbox.AsyncSocketServer
             get { return _bag; }
         }
 
+        public void Error(ServerProcess process, Exception exception)
+        {
+            throw new NotImplementedException();
+        }
+
         void IServer.Add(ServerProcess process)
         {
             lock (LockObject) _bag.Add(process);

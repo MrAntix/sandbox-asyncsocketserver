@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Sandbox.AsyncSocketServer.Abstraction;
 
 namespace Sandbox.AsyncSocketServer
@@ -20,6 +21,7 @@ namespace Sandbox.AsyncSocketServer
         }
 
         public bool IsStarted { get; private set; }
+        public Exception Exception { get; set; }
 
         public IServer Server { get; set; }
 
@@ -38,19 +40,31 @@ namespace Sandbox.AsyncSocketServer
                 throw new InvalidOperationException();
 
             IsStarted = false;
+            Exception = null;
         }
 
         async void Run()
         {
-            while (IsStarted)
+            try
             {
-                // get the next connection
-                var worker = await _listener.AcceptAsync();
+                while (IsStarted)
+                {
+                    // get the next connection
+                    var worker = await _listener.AcceptAsync();
 
-                // recieve any data, process it and send a response
-                var data = await worker.ReceiveAsync(_handler.Terminator);
-                var processedData = await _handler.ProcessAsync(data);
-                await worker.SendAsync(processedData);
+                    // recieve any data, process it and send a response
+                    var data = await worker.ReceiveAsync(_handler.Terminator);
+                    var processedData = await _handler.ProcessAsync(data);
+                    await worker.SendAsync(processedData);
+                }
+            }
+            catch (Exception ex)
+            {
+                IsStarted = false;
+                Exception = ex;
+
+                if (Server != null)
+                    Server.Error(this, ex);
             }
         }
 
