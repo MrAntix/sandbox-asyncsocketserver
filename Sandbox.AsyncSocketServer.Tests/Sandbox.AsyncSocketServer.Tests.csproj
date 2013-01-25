@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="buffer_manager_test.cs" />
+    <Compile Include="Microsoft\AsyncPump.cs" />
     <Compile Include="listener_send_receive_test.cs" />
     <Compile Include="Abstraction\listener_test_base.cs" />
     <Compile Include="listener_max_connections_test.cs" />
