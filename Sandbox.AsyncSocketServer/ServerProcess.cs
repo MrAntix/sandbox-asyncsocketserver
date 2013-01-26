@@ -77,13 +77,12 @@ namespace Sandbox.AsyncSocketServer
 
                 // recieve any data, process it and send a response
                 var data = await worker.ReceiveAsync(_handler.Terminator);
-                Server.Log(this, "Received data");
 
                 var processedData = await _handler.ProcessAsync(data);
-                Server.Log(this, "Process data");
 
                 await worker.SendAsync(processedData);
-                Server.Log(this, "Sent data");
+
+                Server.Log(this, "Process Complete");
             }
             catch (Exception ex)
             {
@@ -96,8 +95,7 @@ namespace Sandbox.AsyncSocketServer
             IsStarted = false;
             Exception = ex;
 
-            if (Server != null)
-                Server.Exception(this, ex);
+            Server.Exception(this, ex);
 
             Server.Log(this, "Stopped on exception");
         }
