@@ -68,7 +68,7 @@ namespace Sandbox.AsyncSocketServer.Tests
 
         static IServer GetServer()
         {
-            return new Server();
+            return new Server(null, null);
         }
 
         static IListener GetListener()

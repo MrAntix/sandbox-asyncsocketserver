@@ -10,7 +10,7 @@ namespace Sandbox.AsyncSocketServer.Abstraction
 
         IEnumerable<ServerProcess> Processes { get; }
 
-        Action<ServerProcess, Exception> NotifyException { get; set; }
-        Action<ServerProcess, string> NotifyLog { get; set; }
+        Action<ServerProcess, Exception> NotifyException { get; }
+        Action<ServerProcess, string> NotifyLog { get; }
     }
 }

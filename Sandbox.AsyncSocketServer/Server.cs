@@ -10,13 +10,31 @@ namespace Sandbox.AsyncSocketServer
         readonly HashSet<ServerProcess> _bag = new HashSet<ServerProcess>();
         static readonly object LockObject = new Object();
 
+        readonly Action<ServerProcess, string> _notifyLog;
+        readonly Action<ServerProcess, Exception> _notifyException;
+
+        public Server(
+            Action<ServerProcess, string> notifyLog, 
+            Action<ServerProcess, Exception> notifyException)
+        {
+            _notifyLog = notifyLog;
+            _notifyException = notifyException;
+        }
+
         IEnumerable<ServerProcess> IServer.Processes
         {
             get { return _bag; }
         }
 
-        public Action<ServerProcess, string> NotifyLog { get; set; }
-        public Action<ServerProcess, Exception> NotifyException { get; set; }
+        public Action<ServerProcess, string> NotifyLog
+        {
+            get { return _notifyLog; }
+        }
+
+        public Action<ServerProcess, Exception> NotifyException
+        {
+            get { return _notifyException; }
+        }
 
         void IServer.Add(ServerProcess process)
         {
