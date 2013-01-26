@@ -96,7 +96,6 @@ namespace Sandbox.AsyncSocketServer
             Exception = ex;
 
             Server.Exception(this, ex);
-
             Server.Log(this, "Stopped on exception");
         }
 
