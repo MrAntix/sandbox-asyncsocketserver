@@ -31,7 +31,9 @@ namespace Sandbox.AsyncSocketServer
                 throw new InvalidOperationException();
 
             IsStarted = true;
-            Run();
+            Server.Log("Started");
+
+            Task.Run((Func<Task>) AcceptLoop);
         }
 
         public void Stop()
@@ -41,31 +43,58 @@ namespace Sandbox.AsyncSocketServer
 
             IsStarted = false;
             Exception = null;
+
+            Server.Log("Stopped");
         }
 
-        async void Run()
+        async Task AcceptLoop()
         {
             try
             {
+                if (IsStarted) Server.Log("Running");
                 while (IsStarted)
                 {
                     // get the next connection
                     var worker = await _listener.AcceptAsync();
 
-                    // recieve any data, process it and send a response
-                    var data = await worker.ReceiveAsync(_handler.Terminator);
-                    var processedData = await _handler.ProcessAsync(data);
-                    await worker.SendAsync(processedData);
+                    new Task(() => Process(worker)).Start();
                 }
             }
             catch (Exception ex)
             {
-                IsStarted = false;
-                Exception = ex;
-
-                if (Server != null)
-                    Server.Error(this, ex);
+                HandleException(ex);
             }
+        }
+
+        async Task Process(IWorker worker)
+        {
+            try
+            {
+                Server.Log("Process");
+
+                // recieve any data, process it and send a response
+                var data = await worker.ReceiveAsync(_handler.Terminator);
+                Server.Log("Received data");
+                var processedData = await _handler.ProcessAsync(data);
+                Server.Log("Process data");
+                await worker.SendAsync(processedData);
+                Server.Log("Sent data");
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        }
+
+        void HandleException(Exception ex)
+        {
+            IsStarted = false;
+            Exception = ex;
+
+            if (Server != null)
+                Server.Error(this, ex);
+
+            Server.Log("Stopped on exception");
         }
 
         #region dispose
@@ -87,6 +116,7 @@ namespace Sandbox.AsyncSocketServer
             }
 
             _disposed = true;
+            Server.Log("Disposed");
         }
 
         ~ServerProcess()

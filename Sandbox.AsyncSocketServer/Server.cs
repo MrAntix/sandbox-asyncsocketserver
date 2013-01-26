@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Sandbox.AsyncSocketServer.Abstraction;
 
@@ -19,6 +20,8 @@ namespace Sandbox.AsyncSocketServer
         {
             throw new NotImplementedException();
         }
+
+        public Action<string> LogAction { get; set; }
 
         void IServer.Add(ServerProcess process)
         {
@@ -46,7 +49,7 @@ namespace Sandbox.AsyncSocketServer
 
             if (disposing)
             {
-                foreach (var process in _bag.ToArray()) 
+                foreach (var process in _bag.ToArray())
                     process.Dispose();
             }
 
@@ -61,5 +64,16 @@ namespace Sandbox.AsyncSocketServer
         bool _disposed;
 
         #endregion
+    }
+
+    public static class ServerExtensions
+    {
+        public static void Log(this IServer server, string message)
+        {
+            if (server == null || server.LogAction == null)
+                Debug.WriteLine(message);
+            else
+                server.LogAction(message);
+        }
     }
 }

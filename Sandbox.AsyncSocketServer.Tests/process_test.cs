@@ -12,7 +12,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         [Fact]
         public void dispose_removes_from_server()
         {
-            var sut = new ServerProcess(
+           var sut = new ServerProcess(
                 GetListenerMock().Object, GetMessageHandlerMock().Object);
 
             var serverMock = new Mock<IServer>();
@@ -23,63 +23,77 @@ namespace Sandbox.AsyncSocketServer.Tests
             sut.Dispose();
 
             serverMock.Verify();
+
+            GC.Collect();
         }
 
         [Fact]
-        public async Task start_with_no_server()
+        public void start_with_no_server()
         {
-            var sut = new ServerProcess(
-                GetListenerMock().Object, GetMessageHandlerMock().Object);
+            using (var sut = new ServerProcess(
+                GetListenerMock().Object, GetMessageHandlerMock().Object))
+            {
 
-            Assert.DoesNotThrow(sut.Start);
+                Assert.DoesNotThrow(() => sut.Start());
+            }
         }
 
         [Fact]
-        public async Task cannot_start_one_already_started()
+        public void cannot_start_one_already_started()
         {
-            var sut = new ServerProcess(
-                GetListenerMock().Object, GetMessageHandlerMock().Object);
+            using (var sut = new ServerProcess(
+                GetListenerMock().Object, GetMessageHandlerMock().Object))
+            {
 
-            sut.Start();
+                sut.Start();
 
-            Assert.Throws<InvalidOperationException>(() => sut.Start());
+                Assert.Throws<InvalidOperationException>(() => sut.Start());
+
+                Thread.Sleep(100);
+            }
         }
 
         [Fact]
-        public async Task can_restart_a_process()
+        public void can_restart_a_process()
         {
-            var sut = new ServerProcess(
-                GetListenerMock().Object, GetMessageHandlerMock().Object);
+            using (var sut = new ServerProcess(
+                GetListenerMock().Object, GetMessageHandlerMock().Object))
+            {
 
-            sut.Start();
-            Assert.True(sut.IsStarted);
+                sut.Start();
+                Assert.True(sut.IsStarted);
 
-            sut.Stop();
-            Assert.False(sut.IsStarted);
+                sut.Stop();
+                Assert.False(sut.IsStarted);
 
-            sut.Start();
-            Assert.True(sut.IsStarted);
+                sut.Start();
+                Assert.True(sut.IsStarted);
+
+                Thread.Sleep(100);
+            }
         }
 
         [Fact]
-        public async Task on_error_IsStarted_is_false()
+        public void on_error_IsStarted_is_false()
         {
             var listenerMock = GetListenerMock();
             listenerMock
                 .Setup(o => o.AcceptAsync())
                 .Callback(() => { throw new Exception(); });
 
-            var sut = new ServerProcess(
-                listenerMock.Object, GetMessageHandlerMock().Object);
+            using (var sut = new ServerProcess(
+                listenerMock.Object, GetMessageHandlerMock().Object))
+            {
 
-            sut.Start();
-            Thread.Sleep(100);
+                sut.Start();
+                Thread.Sleep(100);
 
-            Assert.False(sut.IsStarted);
+                Assert.False(sut.IsStarted);
+            }
         }
 
         [Fact]
-        public async Task on_error_Exception_is_set()
+        public void on_error_Exception_is_set()
         {
             var exception = new Exception();
 
@@ -88,17 +102,19 @@ namespace Sandbox.AsyncSocketServer.Tests
                 .Setup(o => o.AcceptAsync())
                 .Callback(() => { throw exception; });
 
-            var sut = new ServerProcess(
-                listenerMock.Object, GetMessageHandlerMock().Object);
+            using (var sut = new ServerProcess(
+                listenerMock.Object, GetMessageHandlerMock().Object))
+            {
 
-            sut.Start();
-            Thread.Sleep(100);
+                sut.Start();
+                Thread.Sleep(100);
 
-            Assert.Equal(exception, sut.Exception);
+                Assert.Equal(exception, sut.Exception);
+            }
         }
 
         [Fact]
-        public async Task on_error_server_recieves_exception()
+        public void on_error_server_recieves_exception()
         {
             var exception = new Exception();
 
@@ -107,18 +123,20 @@ namespace Sandbox.AsyncSocketServer.Tests
                 .Setup(o => o.AcceptAsync())
                 .Callback(() => { throw exception; });
 
-            var sut = new ServerProcess(
-                listenerMock.Object, GetMessageHandlerMock().Object);
+            using (var sut = new ServerProcess(
+                listenerMock.Object, GetMessageHandlerMock().Object))
+            {
 
-            var serverMock = new Mock<IServer>();
-            serverMock.Setup(o => o.Error(sut, exception)).Verifiable();
+                var serverMock = new Mock<IServer>();
+                serverMock.Setup(o => o.Error(sut, exception)).Verifiable();
 
-            sut.Server = serverMock.Object;
+                sut.Server = serverMock.Object;
 
-            sut.Start();
-            Thread.Sleep(100);
+                sut.Start();
+                Thread.Sleep(100);
 
-            serverMock.Verify();
+                serverMock.Verify();
+            }
         }
 
         static Mock<IListener> GetListenerMock(Mock<IWorker> workerMock = null)
@@ -141,9 +159,15 @@ namespace Sandbox.AsyncSocketServer.Tests
         {
             var mock = new Mock<IWorker>();
             mock.Setup(o => o.ReceiveAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new byte[] { }));
+                .Returns(Task<byte[]>.Factory.StartNew(
+                () =>
+                    {
+                        Thread.Sleep(10);
+                        return new byte[] { };
+                    }));
             mock.Setup(o => o.SendAsync(It.IsAny<byte[]>()))
-                .Returns(Task.FromResult(default(object)));
+                .Returns(Task.Factory.StartNew(
+                () => Thread.Sleep(10)));
 
             return mock;
         }

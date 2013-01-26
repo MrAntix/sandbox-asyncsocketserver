@@ -10,5 +10,6 @@ namespace Sandbox.AsyncSocketServer.Abstraction
 
         IEnumerable<ServerProcess> Processes { get; }
         void Error(ServerProcess process, Exception exception);
+        Action<string> LogAction { get; set; }
     }
 }
