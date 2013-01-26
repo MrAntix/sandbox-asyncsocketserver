@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Abstraction\IMessageHandler.cs" />
     <Compile Include="Abstraction\IServer.cs" />
+    <Compile Include="ServerExtensions.cs" />
     <Compile Include="ServerProcess.cs" />
     <Compile Include="Abstraction\IWorkerSocket.cs" />
     <Compile Include="Extensions.cs" />

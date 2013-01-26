@@ -9,7 +9,8 @@ namespace Sandbox.AsyncSocketServer.Abstraction
         void Remove(ServerProcess process);
 
         IEnumerable<ServerProcess> Processes { get; }
-        void Error(ServerProcess process, Exception exception);
-        Action<string> LogAction { get; set; }
+
+        Action<ServerProcess, Exception> ExceptionAction { get; set; }
+        Action<ServerProcess, string> LogAction { get; set; }
     }
 }
