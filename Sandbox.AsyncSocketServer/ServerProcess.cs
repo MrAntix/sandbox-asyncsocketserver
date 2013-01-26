@@ -34,7 +34,7 @@ namespace Sandbox.AsyncSocketServer
                 throw new InvalidOperationException();
 
             IsStarted = true;
-            Server.Log(this,"Started");
+            Server.Log(this, "Started");
 
             Task.Run(() => AcceptLoop());
         }
@@ -50,7 +50,7 @@ namespace Sandbox.AsyncSocketServer
             Server.Log(this, "Stopped");
         }
 
-        async Task AcceptLoop()
+        async void AcceptLoop()
         {
             try
             {
@@ -78,8 +78,10 @@ namespace Sandbox.AsyncSocketServer
                 // recieve any data, process it and send a response
                 var data = await worker.ReceiveAsync(_handler.Terminator);
                 Server.Log(this, "Received data");
+
                 var processedData = await _handler.ProcessAsync(data);
                 Server.Log(this, "Process data");
+
                 await worker.SendAsync(processedData);
                 Server.Log(this, "Sent data");
             }

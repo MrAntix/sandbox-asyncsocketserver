@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 //http://blogs.msdn.com/b/pfxteam/archive/2012/02/02/10263555.aspx
+
 namespace Sandbox.AsyncSocketServer.Tests.Microsoft
 {
     /// <summary>Provides a pump that supports running asynchronous methods on the current thread.</summary>
@@ -31,7 +32,10 @@ namespace Sandbox.AsyncSocketServer.Tests.Microsoft
                 // Pump continuations and propagate any exceptions
                 syncCtx.RunOnCurrentThread();
             }
-            finally { SynchronizationContext.SetSynchronizationContext(prevCtx); }
+            finally
+            {
+                SynchronizationContext.SetSynchronizationContext(prevCtx);
+            }
         }
 
         /// <summary>Runs the specified asynchronous method.</summary>
@@ -56,7 +60,10 @@ namespace Sandbox.AsyncSocketServer.Tests.Microsoft
                 syncCtx.RunOnCurrentThread();
                 t.GetAwaiter().GetResult();
             }
-            finally { SynchronizationContext.SetSynchronizationContext(prevCtx); }
+            finally
+            {
+                SynchronizationContext.SetSynchronizationContext(prevCtx);
+            }
         }
 
         /// <summary>Runs the specified asynchronous method.</summary>
@@ -81,21 +88,27 @@ namespace Sandbox.AsyncSocketServer.Tests.Microsoft
                 syncCtx.RunOnCurrentThread();
                 return t.GetAwaiter().GetResult();
             }
-            finally { SynchronizationContext.SetSynchronizationContext(prevCtx); }
+            finally
+            {
+                SynchronizationContext.SetSynchronizationContext(prevCtx);
+            }
         }
 
         /// <summary>Provides a SynchronizationContext that's single-threaded.</summary>
-        private sealed class SingleThreadSynchronizationContext : SynchronizationContext
+        sealed class SingleThreadSynchronizationContext : SynchronizationContext
         {
             /// <summary>The queue of work items.</summary>
-            private readonly BlockingCollection<KeyValuePair<SendOrPostCallback, object>> m_queue =
+            readonly BlockingCollection<KeyValuePair<SendOrPostCallback, object>> m_queue =
                 new BlockingCollection<KeyValuePair<SendOrPostCallback, object>>();
+
             /// <summary>The processing thread.</summary>
-            private readonly Thread m_thread = Thread.CurrentThread;
+            readonly Thread m_thread = Thread.CurrentThread;
+
             /// <summary>The number of outstanding operations.</summary>
-            private int m_operationCount = 0;
+            int m_operationCount;
+
             /// <summary>Whether to track operations m_operationCount.</summary>
-            private readonly bool m_trackOperations;
+            readonly bool m_trackOperations;
 
             /// <summary>Initializes the context.</summary>
             /// <param name="trackOperations">Whether to track operation count.</param>
@@ -127,7 +140,10 @@ namespace Sandbox.AsyncSocketServer.Tests.Microsoft
             }
 
             /// <summary>Notifies the context that no more work will arrive.</summary>
-            public void Complete() { m_queue.CompleteAdding(); }
+            public void Complete()
+            {
+                m_queue.CompleteAdding();
+            }
 
             /// <summary>Invoked when an async operation is started.</summary>
             public override void OperationStarted()

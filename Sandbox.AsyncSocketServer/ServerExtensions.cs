@@ -17,7 +17,7 @@ namespace Sandbox.AsyncSocketServer
         }
 
         public static void Exception(
-            this IServer server, 
+            this IServer server,
             ServerProcess process, Exception exception)
         {
             if (server == null || server.NotifyException == null)

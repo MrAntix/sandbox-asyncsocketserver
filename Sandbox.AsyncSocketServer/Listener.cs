@@ -41,7 +41,7 @@ namespace Sandbox.AsyncSocketServer
 
             return _createWorker(socket);
         }
-        
+
         static Socket CreateBoundSocket(IPEndPoint endpoint)
         {
             // demand permission
