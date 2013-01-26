@@ -15,8 +15,8 @@ namespace Sandbox.AsyncSocketServer
             get { return _bag; }
         }
 
-        public Action<ServerProcess, string> LogAction { get; set; }
-        public Action<ServerProcess, Exception> ExceptionAction { get; set; }
+        public Action<ServerProcess, string> NotifyLog { get; set; }
+        public Action<ServerProcess, Exception> NotifyException { get; set; }
 
         void IServer.Add(ServerProcess process)
         {

@@ -113,7 +113,7 @@ namespace Sandbox.AsyncSocketServer.Tests
             }
         }
 
-        [Fact(Skip = "TODO")]
+        [Fact]
         public void on_error_server_recieves_exception()
         {
             var exception = new Exception();
@@ -128,7 +128,9 @@ namespace Sandbox.AsyncSocketServer.Tests
             {
 
                 var serverMock = new Mock<IServer>();
-                //serverMock.Setup(o => o.Error(sut, exception)).Verifiable();
+                serverMock
+                    .SetupGet(o => o.NotifyException)
+                    .Verifiable();
 
                 sut.Server = serverMock.Object;
 
