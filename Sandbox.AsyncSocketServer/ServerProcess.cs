@@ -36,7 +36,7 @@ namespace Sandbox.AsyncSocketServer
             IsStarted = true;
             Server.Log(this,"Started");
 
-            Task.Run((Func<Task>) AcceptLoop);
+            Task.Run(() => AcceptLoop());
         }
 
         public void Stop()
@@ -60,7 +60,7 @@ namespace Sandbox.AsyncSocketServer
                     // get the next connection
                     var worker = await _listener.AcceptAsync();
 
-                    new Task(() => Process(worker)).Start();
+                    Process(worker);
                 }
             }
             catch (Exception ex)
@@ -69,7 +69,7 @@ namespace Sandbox.AsyncSocketServer
             }
         }
 
-        async Task Process(IWorker worker)
+        async void Process(IWorker worker)
         {
             try
             {
