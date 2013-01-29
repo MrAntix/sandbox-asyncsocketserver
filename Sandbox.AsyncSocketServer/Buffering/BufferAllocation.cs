@@ -1,4 +1,4 @@
-﻿namespace Sandbox.AsyncSocketServer
+﻿namespace Sandbox.AsyncSocketServer.Buffering
 {
     public class BufferAllocation
     {

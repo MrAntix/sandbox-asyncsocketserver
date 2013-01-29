@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using Sandbox.AsyncSocketServer.Abstraction;
 
-namespace Sandbox.AsyncSocketServer
+namespace Sandbox.AsyncSocketServer.Sockets
 {
     public class WorkerFactory : IWorkerFactory
     {

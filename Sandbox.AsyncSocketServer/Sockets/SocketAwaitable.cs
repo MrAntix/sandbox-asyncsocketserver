@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Sandbox.AsyncSocketServer
+namespace Sandbox.AsyncSocketServer.Sockets
 {
     public sealed class SocketAwaitable : INotifyCompletion
     {

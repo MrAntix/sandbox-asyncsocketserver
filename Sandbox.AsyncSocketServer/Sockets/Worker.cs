@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Sandbox.AsyncSocketServer.Abstraction;
 
-namespace Sandbox.AsyncSocketServer
+namespace Sandbox.AsyncSocketServer.Sockets
 {
     public class Worker : IWorker
     {

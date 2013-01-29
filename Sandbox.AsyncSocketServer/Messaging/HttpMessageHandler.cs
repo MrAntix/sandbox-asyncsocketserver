@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Sandbox.AsyncSocketServer.Abstraction;
 
-namespace Sandbox.AsyncSocketServer
+namespace Sandbox.AsyncSocketServer.Messaging
 {
     public class HttpMessageHandler :
         IMessageHandler

@@ -3,6 +3,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using Sandbox.AsyncSocketServer.Abstraction;
+using Sandbox.AsyncSocketServer.Buffering;
+using Sandbox.AsyncSocketServer.Sockets;
 
 namespace Sandbox.AsyncSocketServer.Tests.Abstraction
 {

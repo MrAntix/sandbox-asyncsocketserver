@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Sandbox.AsyncSocketServer
+namespace Sandbox.AsyncSocketServer.Sockets
 {
     public class ListenerSettings
     {

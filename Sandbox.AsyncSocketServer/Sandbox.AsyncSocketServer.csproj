@@ -44,25 +44,26 @@
     <Compile Include="ServerExtensions.cs" />
     <Compile Include="ServerProcess.cs" />
     <Compile Include="Abstraction\IWorkerSocket.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="BufferManager.cs" />
-    <Compile Include="BufferAllocation.cs" />
-    <Compile Include="BufferMaximumAllocationsExceededException.cs" />
-    <Compile Include="HttpMessageHandler.cs" />
+    <Compile Include="Sockets\Extensions.cs" />
+    <Compile Include="Buffering\BufferManager.cs" />
+    <Compile Include="Buffering\BufferAllocation.cs" />
+    <Compile Include="Buffering\BufferMaximumAllocationsExceededException.cs" />
+    <Compile Include="Messaging\HttpMessageHandler.cs" />
     <Compile Include="Server.cs" />
-    <Compile Include="Worker.cs" />
-    <Compile Include="WorkerFactory.cs" />
+    <Compile Include="Sockets\Worker.cs" />
+    <Compile Include="Sockets\WorkerFactory.cs" />
     <Compile Include="Abstraction\IBufferManager.cs" />
     <Compile Include="Abstraction\IWorkerFactory.cs" />
     <Compile Include="Abstraction\IListener.cs" />
     <Compile Include="Abstraction\IWorker.cs" />
-    <Compile Include="WorkerFactoryException.cs" />
-    <Compile Include="Listener.cs" />
-    <Compile Include="ListenerSettings.cs" />
+    <Compile Include="Sockets\WorkerFactoryException.cs" />
+    <Compile Include="Sockets\Listener.cs" />
+    <Compile Include="Sockets\ListenerSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SocketAwaitable.cs" />
-    <Compile Include="WorkerSocket.cs" />
+    <Compile Include="Sockets\SocketAwaitable.cs" />
+    <Compile Include="Sockets\WorkerSocket.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

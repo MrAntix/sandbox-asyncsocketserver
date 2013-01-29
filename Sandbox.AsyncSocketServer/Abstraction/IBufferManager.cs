@@ -1,4 +1,6 @@
-﻿namespace Sandbox.AsyncSocketServer.Abstraction
+﻿using Sandbox.AsyncSocketServer.Buffering;
+
+namespace Sandbox.AsyncSocketServer.Abstraction
 {
     public interface IBufferManager
     {

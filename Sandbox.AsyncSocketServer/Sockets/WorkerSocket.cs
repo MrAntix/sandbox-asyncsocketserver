@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using Sandbox.AsyncSocketServer.Abstraction;
 
-namespace Sandbox.AsyncSocketServer
+namespace Sandbox.AsyncSocketServer.Sockets
 {
     public class WorkerSocket : IWorkerSocket
     {

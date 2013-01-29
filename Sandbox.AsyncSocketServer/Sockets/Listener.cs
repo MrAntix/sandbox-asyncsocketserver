@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Sandbox.AsyncSocketServer.Abstraction;
 
-namespace Sandbox.AsyncSocketServer
+namespace Sandbox.AsyncSocketServer.Sockets
 {
     public class Listener : IListener
     {

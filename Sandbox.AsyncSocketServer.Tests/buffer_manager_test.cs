@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using Sandbox.AsyncSocketServer.Buffering;
+using Xunit;
 
 namespace Sandbox.AsyncSocketServer.Tests
 {

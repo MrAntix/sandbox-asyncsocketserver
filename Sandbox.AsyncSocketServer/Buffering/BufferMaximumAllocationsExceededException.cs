@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Sandbox.AsyncSocketServer
+namespace Sandbox.AsyncSocketServer.Buffering
 {
     [Serializable]
-    public class WorkerFactoryException : Exception
+    public class BufferMaximumAllocationsExceededException : Exception
     {
-        public WorkerFactoryException()
+        public BufferMaximumAllocationsExceededException()
         {
         }
 
-        protected WorkerFactoryException(
+        protected BufferMaximumAllocationsExceededException(
             SerializationInfo info,
             StreamingContext context)
             : base(info, context)

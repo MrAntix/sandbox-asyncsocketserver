@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using Sandbox.AsyncSocketServer.Abstraction;
 
-namespace Sandbox.AsyncSocketServer
+namespace Sandbox.AsyncSocketServer.Buffering
 {
     public class BufferManager : IBufferManager
     {

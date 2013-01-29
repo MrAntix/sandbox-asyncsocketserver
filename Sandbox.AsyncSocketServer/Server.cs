@@ -14,7 +14,7 @@ namespace Sandbox.AsyncSocketServer
         readonly Action<ServerProcess, Exception> _notifyException;
 
         public Server(
-            Action<ServerProcess, string> notifyLog, 
+            Action<ServerProcess, string> notifyLog,
             Action<ServerProcess, Exception> notifyException)
         {
             _notifyLog = notifyLog;
