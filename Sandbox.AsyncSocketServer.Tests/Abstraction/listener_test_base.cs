@@ -24,7 +24,7 @@ namespace Sandbox.AsyncSocketServer.Tests.Abstraction
         static IPAddress _ipAddress;
         static int _port = 8088;
 
-        readonly IListener _listener;
+        IListener _listener;
         readonly IBufferManager _manager;
 
         protected listener_test_base(
@@ -69,17 +69,69 @@ namespace Sandbox.AsyncSocketServer.Tests.Abstraction
             public Socket Client;
             public IWorker Server;
 
+            #region dispose
+
             public void Dispose()
             {
-                Server.Dispose();
-                Client.Shutdown(SocketShutdown.Both);
-                Client.Dispose();
+                Dispose(true);
+                GC.SuppressFinalize(this);
             }
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (_disposed) return;
+
+                if (disposing)
+                {
+                    Server.Dispose();
+                    Client.Shutdown(SocketShutdown.Both);
+                    Client.Dispose();
+                }
+
+                _disposed = true;
+            }
+
+            ~ClientServer()
+            {
+                Dispose(false);
+            }
+
+            bool _disposed;
+
+            #endregion
         }
+
+        #region dispose
 
         public void Dispose()
         {
-            _listener.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+
+            if (disposing)
+            {
+                if (_listener != null)
+                {
+                    _listener.Dispose();
+                    _listener = null;
+                }
+            }
+
+            _disposed = true;
+        }
+
+        ~listener_test_base()
+        {
+            Dispose(false);
+        }
+
+        bool _disposed;
+
+        #endregion
     }
 }

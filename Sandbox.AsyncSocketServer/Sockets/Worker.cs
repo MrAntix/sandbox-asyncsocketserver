@@ -8,7 +8,7 @@ namespace Sandbox.AsyncSocketServer.Sockets
 {
     public class Worker : IWorker
     {
-        readonly IWorkerSocket _socket;
+        IWorkerSocket _socket;
         readonly SocketAwaitable _awaitable;
         readonly Action _release;
 
@@ -77,6 +77,16 @@ namespace Sandbox.AsyncSocketServer.Sockets
             await _awaitable;
         }
 
+        public void Close()
+        {
+            if (_socket == null) return;
+
+            _socket.Dispose();
+            _socket = null;
+
+            _release();
+        }
+
         int GetTerminatorIndex(IReadOnlyList<byte> data, string terminator, int startIndex)
         {
             if (data == null)
@@ -110,12 +120,7 @@ namespace Sandbox.AsyncSocketServer.Sockets
         {
             if (Disposed) return;
 
-            if (disposing)
-            {
-                _socket.Dispose();
-            }
-
-            _release();
+            Close();
             Disposed = true;
         }
 

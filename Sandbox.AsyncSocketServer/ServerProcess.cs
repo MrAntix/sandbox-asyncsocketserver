@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using Sandbox.AsyncSocketServer.Abstraction;
 
@@ -77,11 +78,13 @@ namespace Sandbox.AsyncSocketServer
 
                 // recieve any data, process it and send a response
                 var data = await worker.ReceiveAsync(_handler.Terminator);
+                Server.Log(this, Encoding.UTF8.GetString(data));
 
                 var processedData = await _handler.ProcessAsync(data);
 
                 await worker.SendAsync(processedData);
 
+                worker.Close();
                 Server.Log(this, "Process Complete");
             }
             catch (Exception ex)

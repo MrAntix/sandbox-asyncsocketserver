@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Sandbox.AsyncSocketServer.Sockets
 {
-    public sealed class SocketAwaitable : INotifyCompletion
+    public sealed class SocketAwaitable : INotifyCompletion, IDisposable
     {
         static readonly Action Sentinel = () => { };
 
@@ -17,7 +17,7 @@ namespace Sandbox.AsyncSocketServer.Sockets
             _timeout = timeout;
 
             if (_timeout.Ticks != 0
-                || _timeout == Timeout.InfiniteTimeSpan)
+                && _timeout != Timeout.InfiniteTimeSpan)
             {
                 // create the timer object, disabled
                 _timer = new Timer(
@@ -90,7 +90,7 @@ namespace Sandbox.AsyncSocketServer.Sockets
         #region timer
 
         readonly TimeSpan _timeout;
-        readonly Timer _timer;
+        Timer _timer;
 
         void StartTimer()
         {
@@ -111,5 +111,39 @@ namespace Sandbox.AsyncSocketServer.Sockets
         }
 
         #endregion
+
+        #region dispose
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+
+            if (disposing)
+            {
+                if (_timer != null)
+                {
+                    _timer.Dispose();
+                    _timer = null;
+                }
+            }
+
+            _disposed = true;
+        }
+
+        ~SocketAwaitable()
+        {
+            Dispose(false);
+        }
+
+        bool _disposed;
+
+        #endregion
+    
     }
 }

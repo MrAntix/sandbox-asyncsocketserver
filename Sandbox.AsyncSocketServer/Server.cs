@@ -5,7 +5,7 @@ using Sandbox.AsyncSocketServer.Abstraction;
 
 namespace Sandbox.AsyncSocketServer
 {
-    public class Server : IServer
+    public sealed class Server : IServer
     {
         readonly HashSet<ServerProcess> _bag = new HashSet<ServerProcess>();
         static readonly object LockObject = new Object();
@@ -56,7 +56,7 @@ namespace Sandbox.AsyncSocketServer
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
+        protected void Dispose(bool disposing)
         {
             if (_disposed) return;
 
