@@ -32,7 +32,7 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
         protected override void OnShown(EventArgs e)
         {
             var workerFactory = new WorkerFactory(
-                new BufferManager(100, 2048), Timeout.InfiniteTimeSpan);
+                new BufferManager(100, 2048), TimeSpan.FromMilliseconds(2));
 
             var listener = new Listener(
                 new ListenerSettings(IPAddress.Any, 8088),
