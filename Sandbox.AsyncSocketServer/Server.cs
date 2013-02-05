@@ -56,7 +56,7 @@ namespace Sandbox.AsyncSocketServer
             GC.SuppressFinalize(this);
         }
 
-        protected void Dispose(bool disposing)
+        void Dispose(bool disposing)
         {
             if (_disposed) return;
 

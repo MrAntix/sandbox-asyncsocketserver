@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Threading.Tasks;
 using Sandbox.AsyncSocketServer.Abstraction;
 
@@ -76,20 +75,32 @@ namespace Sandbox.AsyncSocketServer
             {
                 Server.Log(this, "Process");
 
-                // recieve any data, process it and send a response
-                var data = await worker.ReceiveAsync(_handler.Terminator);
-                Server.Log(this, Encoding.UTF8.GetString(data));
+                byte[] response = null;
+                do
+                {
+                    // recieve any data, process it and send a response
+                    var request = await worker.ReceiveAsync();
+                    if (request == null)
+                    {
+                        Server.Log(this, "Process Connection Closed");
 
-                var processedData = await _handler.ProcessAsync(data);
+                        return;
+                    }
 
-                await worker.SendAsync(processedData);
+                    response = await _handler.ProcessAsync(request);
+                } while (response == null);
 
-                worker.Close();
+                await worker.SendAsync(response);
+
                 Server.Log(this, "Process Complete");
             }
             catch (Exception ex)
             {
                 HandleException(ex);
+            }
+            finally
+            {
+                worker.Close();
             }
         }
 
@@ -121,6 +132,7 @@ namespace Sandbox.AsyncSocketServer
             }
 
             _disposed = true;
+
             Server.Log(this, "Disposed");
         }
 

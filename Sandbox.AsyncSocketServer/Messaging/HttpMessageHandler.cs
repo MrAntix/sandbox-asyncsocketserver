@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
 using Sandbox.AsyncSocketServer.Abstraction;
 
@@ -8,13 +7,31 @@ namespace Sandbox.AsyncSocketServer.Messaging
     public class HttpMessageHandler :
         IMessageHandler
     {
+        readonly IHttpMessage _message;
+
+        public HttpMessageHandler(IHttpMessage message)
+        {
+            _message = message;
+        }
+
         public async Task<byte[]> ProcessAsync(byte[] request)
         {
-            var requestString = Encoding.UTF8.GetString(request);
+            await _message.WriteAsync(request);
 
-            var responseString = "HTTP/1.1 200 Hiya\r\n\r\nHello World\r\n\r\n";
+            if (_message.HasHeader)
+            {
+                var responseString =
+                    string.Concat(
+                        "HTTP/1.1 200", Terminator,
+                        "<pre>",
+                        Encoding.UTF8.GetString(request),
+                        "</pre>"
+                        );
 
-            return Encoding.UTF8.GetBytes(responseString);
+                return Encoding.UTF8.GetBytes(responseString);
+            }
+
+            return null;
         }
 
         public string Terminator

@@ -31,7 +31,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                 {
                     while (!server.Disposed)
                     {
-                        var result = server.ReceiveAsync(Settings.Terminator).Result;
+                        var result = server.ReceiveAsync().Result;
                         Debug.WriteLine(Encoding.ASCII.GetString(result));
                     }
                 }).Start();
@@ -43,7 +43,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                     {
                         Thread.Sleep(loop);
                         clientServer.Client.Send(
-                            Encoding.ASCII.GetBytes(DataToSend + Settings.Terminator));
+                            Encoding.ASCII.GetBytes(DataToSend));
                     }
                 });
         }

@@ -41,6 +41,8 @@
   <ItemGroup>
     <Compile Include="Abstraction\IMessageHandler.cs" />
     <Compile Include="Abstraction\IServer.cs" />
+    <Compile Include="Messaging\HttpMessage.cs" />
+    <Compile Include="Messaging\IHttpMessage.cs" />
     <Compile Include="ServerExtensions.cs" />
     <Compile Include="ServerProcess.cs" />
     <Compile Include="Abstraction\IWorkerSocket.cs" />
@@ -51,6 +53,7 @@
     <Compile Include="Messaging\HttpMessageHandler.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Sockets\Worker.cs" />
+    <Compile Include="Sockets\WorkerTimeoutException.cs" />
     <Compile Include="Sockets\WorkerFactory.cs" />
     <Compile Include="Abstraction\IBufferManager.cs" />
     <Compile Include="Abstraction\IWorkerFactory.cs" />

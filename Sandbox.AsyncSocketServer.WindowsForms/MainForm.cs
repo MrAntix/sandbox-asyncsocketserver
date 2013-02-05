@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Sandbox.AsyncSocketServer.Buffering;
 using Sandbox.AsyncSocketServer.Messaging;
@@ -24,13 +17,16 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
             InitializeComponent();
 
             Action<string> log =
-                m => Invoke(new Action<string>(Log), m);
+                m =>
+                    {
+                        if (InvokeRequired) Invoke(new Action<string>(Log), m);
+                        else Log(m);
+                    };
 
             _server = new Server(
                 (p, m) => log(string.Format("{0}: {1}\r\n", p.Name, m)),
                 (p, ex) => Log(string.Format("!ERROR! {0}: {1}\r\n", p.Name, ex.ToString()))
                 );
-
         }
 
         protected override void OnShown(EventArgs e)
@@ -44,25 +40,26 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
                 );
 
             var process = new ServerProcess(
-                listener, new HttpMessageHandler())
-            {
-                Name = "sandbox",
-                Server = _server
-            };
+                listener, new HttpMessageHandler(new HttpMessage()))
+                {
+                    Name = "sandbox",
+                    Server = _server
+                };
 
             process.Start();
         }
 
         void Log(string message)
         {
-            LogTextBox.AppendText(message);
+            if (!LogTextBox.IsDisposed)
+                LogTextBox.AppendText(message);
         }
 
-        protected override void OnClosed(EventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            base.OnClosed(e);
-
             _server.Dispose();
+
+            base.OnFormClosing(e);
         }
     }
 }

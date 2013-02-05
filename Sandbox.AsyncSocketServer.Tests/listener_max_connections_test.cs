@@ -27,7 +27,7 @@ namespace Sandbox.AsyncSocketServer.Tests
             for (var i = 0; i < Settings.MaxConnections; i++)
                 clientServers.Add(CreateClientServer());
 
-            var message = Encoding.ASCII.GetBytes("Hello World" + Settings.Terminator);
+            var message = Encoding.ASCII.GetBytes("Hello World");
 
             var totalBytes = clientServers.Sum(c => c.Client.Send(message));
 

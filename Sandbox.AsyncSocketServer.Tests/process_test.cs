@@ -160,7 +160,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         static Mock<IWorker> GetWorkerMock()
         {
             var mock = new Mock<IWorker>();
-            mock.Setup(o => o.ReceiveAsync(It.IsAny<string>()))
+            mock.Setup(o => o.ReceiveAsync())
                 .Returns(Task<byte[]>.Factory.StartNew(
                     () =>
                         {

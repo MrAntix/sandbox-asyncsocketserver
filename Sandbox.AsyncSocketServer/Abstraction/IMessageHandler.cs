@@ -11,10 +11,5 @@ namespace Sandbox.AsyncSocketServer.Abstraction
         ///     <para>Process a message coming from the worker</para>
         /// </summary>
         Task<byte[]> ProcessAsync(byte[] request);
-
-        /// <summary>
-        ///     <para>A terminator for the incomming data</para>
-        /// </summary>
-        string Terminator { get; }
     }
 }

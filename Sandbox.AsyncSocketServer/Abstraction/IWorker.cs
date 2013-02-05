@@ -5,7 +5,7 @@ namespace Sandbox.AsyncSocketServer.Abstraction
 {
     public interface IWorker : IDisposable
     {
-        Task<byte[]> ReceiveAsync(string terminator);
+        Task<byte[]> ReceiveAsync();
         Task SendAsync(byte[] data);
         void Close();
 

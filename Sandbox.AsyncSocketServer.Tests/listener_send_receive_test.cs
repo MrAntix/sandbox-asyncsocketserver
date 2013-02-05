@@ -1,6 +1,8 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
+using Antix.Testing;
 using Sandbox.AsyncSocketServer.Tests.Abstraction;
 using Xunit;
 
@@ -12,9 +14,9 @@ namespace Sandbox.AsyncSocketServer.Tests
 
         public listener_send_receive_test() :
             base(new TestSettings
-                {
-                    MaxConnections = 1
-                })
+            {
+                MaxConnections = 1
+            })
         {
         }
 
@@ -25,10 +27,10 @@ namespace Sandbox.AsyncSocketServer.Tests
             using (clientServer.Client)
             {
                 clientServer.Client.Send(
-                    Encoding.ASCII.GetBytes(DataToSend + Settings.Terminator));
+                    Encoding.ASCII.GetBytes(DataToSend));
 
                 // see what we get
-                var result = await clientServer.Server.ReceiveAsync(Settings.Terminator);
+                var result = await clientServer.Server.ReceiveAsync();
                 var actual = Encoding.ASCII.GetString(result);
 
                 Assert.Equal(DataToSend, actual);
@@ -36,15 +38,15 @@ namespace Sandbox.AsyncSocketServer.Tests
         }
 
         [Fact]
-        public async Task client_sends_to_server_with_terminator()
+        public async Task client_sends_to_server()
         {
             var clientServer = CreateClientServer();
 
             clientServer.Client.Send(
-                Encoding.ASCII.GetBytes(DataToSend + Settings.Terminator));
+                Encoding.ASCII.GetBytes(DataToSend));
 
             // see what we get
-            var result = await clientServer.Server.ReceiveAsync(Settings.Terminator);
+            var result = await clientServer.Server.ReceiveAsync();
             var actual = Encoding.ASCII.GetString(result);
 
             Assert.Equal(DataToSend, actual);
@@ -56,14 +58,24 @@ namespace Sandbox.AsyncSocketServer.Tests
             var clientServer = CreateClientServer();
             using (clientServer.Client)
             {
-                var expected = new String('x', 10000000);
+                var expected = TestData.Text
+                    .WithLetters()
+                    .WithRange(1000000, 1000000)
+                    .Build();
 
                 clientServer.Client.Send(
-                    Encoding.ASCII.GetBytes(expected + Settings.Terminator));
+                    Encoding.ASCII.GetBytes(expected));
+                clientServer.Client.Close();
 
-                // see what we get
-                var result = await clientServer.Server.ReceiveAsync(Settings.Terminator);
-                var actual = Encoding.ASCII.GetString(result);
+                // a process loop, break when the result is null
+                var result = new List<byte>();
+                byte[] chunk;
+                while ((chunk = await clientServer.Server.ReceiveAsync()) != null)
+                {
+                    result.AddRange(chunk);
+                }
+
+                var actual = Encoding.ASCII.GetString(result.ToArray());
 
                 Assert.Equal(expected, actual);
             }
@@ -96,10 +108,10 @@ namespace Sandbox.AsyncSocketServer.Tests
                     var expected = string.Concat(DataToSend, i);
 
                     clientServer.Client.Send(
-                        Encoding.ASCII.GetBytes(expected + Settings.Terminator));
+                        Encoding.ASCII.GetBytes(expected));
 
                     // see what we get
-                    var result = await clientServer.Server.ReceiveAsync(Settings.Terminator);
+                    var result = await clientServer.Server.ReceiveAsync();
                     var actual = Encoding.ASCII.GetString(result);
 
                     Assert.Equal(expected, actual);

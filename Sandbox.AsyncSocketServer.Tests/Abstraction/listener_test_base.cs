@@ -12,7 +12,6 @@ namespace Sandbox.AsyncSocketServer.Tests.Abstraction
     {
         protected class TestSettings
         {
-            public string Terminator = "\n\n";
             public int MaxConnections = 1;
             public int BufferSize = 1024;
 

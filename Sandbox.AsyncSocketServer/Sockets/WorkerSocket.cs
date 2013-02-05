@@ -31,7 +31,6 @@ namespace Sandbox.AsyncSocketServer.Sockets
                 try
                 {
                     _socket.Shutdown(SocketShutdown.Both);
-                    Debug.WriteLine("socket shutdown");
                 }
                 catch (Exception)
                 {
