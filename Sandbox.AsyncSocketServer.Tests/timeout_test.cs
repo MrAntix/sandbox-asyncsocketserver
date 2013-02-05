@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Antix.Testing;
-using Sandbox.AsyncSocketServer.Sockets;
 using Sandbox.AsyncSocketServer.Tests.Abstraction;
 using Xunit;
 

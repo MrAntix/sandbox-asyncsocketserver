@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using Antix.Testing;
@@ -14,9 +13,9 @@ namespace Sandbox.AsyncSocketServer.Tests
 
         public listener_send_receive_test() :
             base(new TestSettings
-            {
-                MaxConnections = 1
-            })
+                {
+                    MaxConnections = 1
+                })
         {
         }
 
@@ -59,9 +58,9 @@ namespace Sandbox.AsyncSocketServer.Tests
             using (clientServer.Client)
             {
                 var expected = TestData.Text
-                    .WithLetters()
-                    .WithRange(1000000, 1000000)
-                    .Build();
+                                       .WithLetters()
+                                       .WithRange(1000000, 1000000)
+                                       .Build();
 
                 clientServer.Client.Send(
                     Encoding.ASCII.GetBytes(expected));

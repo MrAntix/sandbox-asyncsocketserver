@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -27,10 +26,7 @@ namespace Sandbox.AsyncSocketServer.Sockets
             }
 
             EventArgs = new SocketAsyncEventArgs();
-            EventArgs.Completed += delegate
-                {
-                    Complete();
-                };
+            EventArgs.Completed += delegate { Complete(); };
         }
 
         internal void Complete()
