@@ -75,7 +75,7 @@ namespace Sandbox.AsyncSocketServer
             {
                 Server.Log(this, "Process");
 
-                byte[] response = null;
+                byte[] response;
                 do
                 {
                     // recieve any data, process it and send a response
