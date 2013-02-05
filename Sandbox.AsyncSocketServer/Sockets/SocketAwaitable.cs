@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -28,22 +29,28 @@ namespace Sandbox.AsyncSocketServer.Sockets
             EventArgs = new SocketAsyncEventArgs();
             EventArgs.Completed += delegate
                 {
-                    if (_timer != null)
-                    {
-                        StopTimer();
-                    }
-
-                    var prev = _continuation
-                               ?? Interlocked
-                                      .CompareExchange(ref _continuation, Sentinel, null);
-
-                    if (prev != null) prev();
+                    Complete();
                 };
+        }
+
+        internal void Complete()
+        {
+            if (IsCompleted) return;
+            IsCompleted = true;
+
+            StopTimer();
+
+            var prev = _continuation
+                       ?? Interlocked
+                              .CompareExchange(ref _continuation, Sentinel, null);
+
+            if (prev != null) prev();
         }
 
         internal void Reset()
         {
             _continuation = null;
+            IsTimedOut = false;
             IsCompleted = false;
             StopTimer();
         }
@@ -86,7 +93,7 @@ namespace Sandbox.AsyncSocketServer.Sockets
             if (EventArgs.SocketError != SocketError.Success)
                 throw new SocketException((int) EventArgs.SocketError);
         }
-
+        
         #region timer
 
         readonly TimeSpan _timeout;
@@ -106,8 +113,8 @@ namespace Sandbox.AsyncSocketServer.Sockets
         void TimedOut()
         {
             IsTimedOut = true;
-            IsCompleted = true;
-            StopTimer();
+
+            Complete();
         }
 
         #endregion
@@ -144,6 +151,5 @@ namespace Sandbox.AsyncSocketServer.Sockets
         bool _disposed;
 
         #endregion
-    
     }
 }
