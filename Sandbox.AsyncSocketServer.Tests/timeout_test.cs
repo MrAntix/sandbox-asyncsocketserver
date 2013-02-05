@@ -53,20 +53,14 @@ namespace Sandbox.AsyncSocketServer.Tests
         }
 
         [Fact]
-        public async Task server_times_out_if_no_communication_sent()
+        public async Task server_times_out_if_no_communication_sent_null_is_returned()
         {
             var clientServer = CreateClientServer();
             using (clientServer.Client)
             {
-                try
-                {
-                    await clientServer.Server.ReceiveAsync();
-                    Assert.True(false, "(No exception was thrown)");
-                }
-                catch (Exception ex)
-                {
-                    Assert.IsType<WorkerTimeoutException>(ex);
-                }
+                var data = await clientServer.Server.ReceiveAsync();
+
+                Assert.Null(data);
             }
         }
     }

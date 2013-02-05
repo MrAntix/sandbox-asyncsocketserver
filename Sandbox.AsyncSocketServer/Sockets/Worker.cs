@@ -33,7 +33,7 @@ namespace Sandbox.AsyncSocketServer.Sockets
             if (_awaitable.IsTimedOut)
             {
                 Close();
-                throw new WorkerTimeoutException();
+                return null;
             }
 
             // check the number of bytes recieved, 
