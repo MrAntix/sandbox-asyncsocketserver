@@ -90,10 +90,11 @@ namespace Sandbox.AsyncSocketServer.Sockets
 
         public void GetResult()
         {
-            if (EventArgs.SocketError != SocketError.Success)
+            if (!IsTimedOut
+                && EventArgs.SocketError != SocketError.Success)
                 throw new SocketException((int) EventArgs.SocketError);
         }
-        
+
         #region timer
 
         readonly TimeSpan _timeout;
