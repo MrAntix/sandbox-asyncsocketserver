@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using Antix.Testing;
+using Sandbox.AsyncSocketServer.Sockets;
 using Sandbox.AsyncSocketServer.Tests.Abstraction;
 using Xunit;
 
@@ -46,6 +50,24 @@ namespace Sandbox.AsyncSocketServer.Tests
                             Encoding.ASCII.GetBytes(DataToSend));
                     }
                 });
+        }
+
+        [Fact]
+        public async Task server_times_out_if_no_communication_sent()
+        {
+            var clientServer = CreateClientServer();
+            using (clientServer.Client)
+            {
+                try
+                {
+                    await clientServer.Server.ReceiveAsync();
+                    Assert.True(false, "(No exception was thrown)");
+                }
+                catch (Exception ex)
+                {
+                    Assert.IsType<WorkerTimeoutException>(ex);
+                }
+            }
         }
     }
 }
