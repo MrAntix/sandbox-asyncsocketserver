@@ -62,8 +62,7 @@ namespace Sandbox.AsyncSocketServer.Sockets
 
             if (_timeout.Ticks == 0)
             {
-                IsTimedOut = true;
-                IsCompleted = true;
+                TimedOut();
             }
             else
             {
