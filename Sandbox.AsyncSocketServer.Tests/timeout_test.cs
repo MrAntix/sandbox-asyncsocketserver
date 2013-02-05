@@ -10,7 +10,7 @@ namespace Sandbox.AsyncSocketServer.Tests
 {
     public class timeout_test : listener_test_base
     {
-        const string DataToSend = "Hello World";
+        const string DataToSend = "Hello World\n";
 
         public timeout_test() :
             base(new TestSettings
@@ -32,7 +32,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                     while (!server.Disposed)
                     {
                         var result = server.ReceiveAsync().Result;
-                        Debug.WriteLine(Encoding.ASCII.GetString(result));
+                        Debug.Write(Encoding.ASCII.GetString(result));
                     }
                 }).Start();
 
