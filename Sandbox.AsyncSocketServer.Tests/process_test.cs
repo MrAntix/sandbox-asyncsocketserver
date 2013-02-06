@@ -13,7 +13,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         public void dispose_removes_from_server()
         {
             var sut = new ServerProcess(
-                GetListenerMock().Object, GetMessageHandlerMock().Object);
+                GetListenerMock().Object, () => GetMessageHandlerMock().Object);
 
             var serverMock = new Mock<IServer>();
             serverMock.Setup(o => o.Remove(It.IsAny<ServerProcess>())).Verifiable();
@@ -31,7 +31,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         public void start_with_no_server()
         {
             using (var sut = new ServerProcess(
-                GetListenerMock().Object, GetMessageHandlerMock().Object))
+                GetListenerMock().Object, () => GetMessageHandlerMock().Object))
             {
                 // ReSharper disable AccessToDisposedClosure
                 // executed right away, not disposed at this point
@@ -44,7 +44,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         public void cannot_start_one_already_started()
         {
             using (var sut = new ServerProcess(
-                GetListenerMock().Object, GetMessageHandlerMock().Object))
+                GetListenerMock().Object, () => GetMessageHandlerMock().Object))
             {
                 sut.Start();
 
@@ -61,7 +61,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         public void can_restart_a_process()
         {
             using (var sut = new ServerProcess(
-                GetListenerMock().Object, GetMessageHandlerMock().Object))
+                GetListenerMock().Object, () => GetMessageHandlerMock().Object))
             {
                 sut.Start();
                 Assert.True(sut.IsStarted);
@@ -85,7 +85,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                 .Callback(() => { throw new Exception(); });
 
             using (var sut = new ServerProcess(
-                listenerMock.Object, GetMessageHandlerMock().Object))
+                listenerMock.Object, () => GetMessageHandlerMock().Object))
             {
                 sut.Start();
                 Thread.Sleep(50);
@@ -105,7 +105,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                 .Callback(() => { throw exception; });
 
             using (var sut = new ServerProcess(
-                listenerMock.Object, GetMessageHandlerMock().Object))
+                listenerMock.Object, () => GetMessageHandlerMock().Object))
             {
                 sut.Start();
                 Thread.Sleep(50);
@@ -125,7 +125,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                 .Callback(() => { throw exception; });
 
             using (var sut = new ServerProcess(
-                listenerMock.Object, GetMessageHandlerMock().Object))
+                listenerMock.Object, () => GetMessageHandlerMock().Object))
             {
                 var serverMock = new Mock<IServer>();
                 serverMock

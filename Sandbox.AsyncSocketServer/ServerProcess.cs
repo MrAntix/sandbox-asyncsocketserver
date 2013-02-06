@@ -7,17 +7,17 @@ namespace Sandbox.AsyncSocketServer
     public class ServerProcess : IDisposable
     {
         readonly IListener _listener;
-        readonly IMessageHandler _handler;
+        readonly Func<IMessageHandler> _createHandler;
 
         public ServerProcess(
-            IListener listener, IMessageHandler handler
+            IListener listener, Func<IMessageHandler> createHandler
             )
         {
             if (listener == null) throw new ArgumentNullException("listener");
-            if (handler == null) throw new ArgumentNullException("handler");
+            if (createHandler == null) throw new ArgumentNullException("createHandler");
 
             _listener = listener;
-            _handler = handler;
+            _createHandler = createHandler;
 
             Name = Guid.NewGuid().ToString();
         }
@@ -75,6 +75,8 @@ namespace Sandbox.AsyncSocketServer
             {
                 Server.Log(this, "Process");
 
+                var handler = _createHandler();
+
                 byte[] response;
                 do
                 {
@@ -87,7 +89,7 @@ namespace Sandbox.AsyncSocketServer
                         return;
                     }
 
-                    response = await _handler.ProcessAsync(request);
+                    response = await handler.ProcessAsync(request);
                 } while (response == null);
 
                 await worker.SendAsync(response);
@@ -101,6 +103,7 @@ namespace Sandbox.AsyncSocketServer
             finally
             {
                 worker.Close();
+                worker.Dispose();
             }
         }
 

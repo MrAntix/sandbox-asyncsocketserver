@@ -39,7 +39,7 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
                 );
 
             var process = new ServerProcess(
-                listener, new HttpMessageHandler(new HttpMessage()))
+                listener, () => new HttpMessageHandler(new HttpMessage()))
                 {
                     Name = "sandbox",
                     Server = _server
@@ -59,6 +59,12 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
             _server.Dispose();
 
             base.OnFormClosing(e);
+        }
+
+        void button1_Click(object sender, EventArgs e)
+        {
+            LogTextBox.Clear();
+            GC.Collect();
         }
     }
 }
