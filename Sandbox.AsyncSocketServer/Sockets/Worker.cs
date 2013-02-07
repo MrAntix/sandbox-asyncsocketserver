@@ -2,22 +2,34 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Sandbox.AsyncSocketServer.Abstraction;
+using Sandbox.AsyncSocketServer.Buffering;
 
 namespace Sandbox.AsyncSocketServer.Sockets
 {
     public class Worker : IWorker
     {
-        IWorkerSocket _socket;
         readonly SocketAwaitable _awaitable;
-        readonly Action _release;
+        IWorkerSocket _socket;
+        Action _release;
 
-        public Worker(
-            IWorkerSocket socket, SocketAwaitable awaitable,
+        public Worker(TimeSpan timeout)
+        {
+            _awaitable = new SocketAwaitable(timeout);
+        }
+
+        public void Set(
+            IWorkerSocket socket, BufferAllocation bufferAllocation,
             Action release)
         {
             _socket = socket;
-            _awaitable = awaitable;
             _release = release;
+
+            _awaitable.EventArgs
+                      .SetBuffer(
+                          bufferAllocation.Buffer,
+                          bufferAllocation.Offset, bufferAllocation.Size);
+
+            Closed = false;
         }
 
         public async Task<byte[]> ReceiveAsync()
@@ -65,32 +77,11 @@ namespace Sandbox.AsyncSocketServer.Sockets
             _socket.Dispose();
             _socket = null;
 
+            Closed = true;
+
             _release();
         }
 
-        #region dispose
-
-        public bool Disposed { get; private set; }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (Disposed) return;
-
-            Close();
-            Disposed = true;
-        }
-
-        ~Worker()
-        {
-            Dispose(false);
-        }
-
-        #endregion
+        public bool Closed { get; private set; }
     }
 }

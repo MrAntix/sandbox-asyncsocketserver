@@ -27,12 +27,12 @@ namespace Sandbox.AsyncSocketServer.Tests
         {
             var clientServer = CreateClientServer();
 
-            var server = clientServer.Server;
+            var serverWorker = clientServer.ServerWorker;
             new Thread(() =>
                 {
-                    while (!server.Disposed)
+                    while (!serverWorker.Closed)
                     {
-                        var result = server.ReceiveAsync().Result;
+                        var result = serverWorker.ReceiveAsync().Result;
                         Debug.Write(Encoding.ASCII.GetString(result));
                     }
                 }).Start();
@@ -55,7 +55,7 @@ namespace Sandbox.AsyncSocketServer.Tests
             var clientServer = CreateClientServer();
             using (clientServer.Client)
             {
-                var data = await clientServer.Server.ReceiveAsync();
+                var data = await clientServer.ServerWorker.ReceiveAsync();
 
                 Assert.Null(data);
             }

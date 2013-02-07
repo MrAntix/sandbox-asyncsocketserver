@@ -8,7 +8,7 @@ namespace Sandbox.AsyncSocketServer.Sockets
     public class WorkerFactory : IWorkerFactory
     {
         readonly IBufferManager _bufferManager;
-        readonly ConcurrentStack<SocketAwaitable> _awaitablesPool;
+        readonly ConcurrentStack<Worker> _workerPool;
 
         public WorkerFactory(
             IBufferManager bufferManager,
@@ -17,30 +17,28 @@ namespace Sandbox.AsyncSocketServer.Sockets
             _bufferManager = bufferManager;
 
             // create event arg pool
-            _awaitablesPool = new ConcurrentStack<SocketAwaitable>(
+            _workerPool = new ConcurrentStack<Worker>(
                 Enumerable.Range(0, bufferManager.MaximumAllocations)
-                          .Select(i => new SocketAwaitable(timeout)));
+                          .Select(i => new Worker(timeout)));
         }
 
         public IWorker Create(IWorkerSocket socket)
         {
-            SocketAwaitable awaitable;
-            if (!_awaitablesPool.TryPop(out awaitable))
+            Worker worker;
+            if (!_workerPool.TryPop(out worker))
                 throw new WorkerFactoryException();
 
             var bufferAllocation = _bufferManager.Allocate();
 
-            awaitable.EventArgs
-                     .SetBuffer(bufferAllocation.Buffer,
-                                bufferAllocation.Offset, bufferAllocation.Size);
-
-            return new Worker(
-                socket, awaitable,
+            worker.Set(
+                socket, bufferAllocation,
                 () =>
-                    {
-                        _awaitablesPool.Push(awaitable);
-                        _bufferManager.Deallocate(bufferAllocation);
-                    });
+                {
+                    _workerPool.Push(worker);
+                    _bufferManager.Deallocate(bufferAllocation);
+                });
+
+            return worker;
         }
     }
 }

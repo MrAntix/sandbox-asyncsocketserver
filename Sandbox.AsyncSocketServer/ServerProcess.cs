@@ -77,8 +77,7 @@ namespace Sandbox.AsyncSocketServer
 
                 var handler = _createHandler();
 
-                byte[] response;
-                do
+                while (!worker.Closed)
                 {
                     // recieve any data, process it and send a response
                     var request = await worker.ReceiveAsync();
@@ -89,10 +88,13 @@ namespace Sandbox.AsyncSocketServer
                         return;
                     }
 
-                    response = await handler.ProcessAsync(request);
-                } while (response == null);
+                    var response = await handler.ProcessAsync(request);
 
-                await worker.SendAsync(response);
+                    if (response == null) continue;
+
+                    await worker.SendAsync(response);
+                    break;
+                }
 
                 Server.Log(this, "Process Complete");
             }
@@ -103,7 +105,6 @@ namespace Sandbox.AsyncSocketServer
             finally
             {
                 worker.Close();
-                worker.Dispose();
             }
         }
 

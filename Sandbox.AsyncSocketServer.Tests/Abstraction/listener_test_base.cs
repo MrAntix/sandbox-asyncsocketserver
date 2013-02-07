@@ -59,14 +59,14 @@ namespace Sandbox.AsyncSocketServer.Tests.Abstraction
             return new ClientServer
                 {
                     Client = client,
-                    Server = acceptTask.Result
+                    ServerWorker = acceptTask.Result
                 };
         }
 
         protected class ClientServer : IDisposable
         {
             public Socket Client;
-            public IWorker Server;
+            public IWorker ServerWorker;
 
             #region dispose
 
@@ -82,7 +82,7 @@ namespace Sandbox.AsyncSocketServer.Tests.Abstraction
 
                 if (disposing)
                 {
-                    Server.Dispose();
+                    ServerWorker.Close();
                     Client.Shutdown(SocketShutdown.Both);
                     Client.Dispose();
                 }

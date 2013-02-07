@@ -1,14 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Sandbox.AsyncSocketServer.Abstraction
 {
-    public interface IWorker : IDisposable
+    public interface IWorker
     {
         Task<byte[]> ReceiveAsync();
         Task SendAsync(byte[] data);
         void Close();
-
-        bool Disposed { get; }
+        bool Closed { get; }
     }
 }

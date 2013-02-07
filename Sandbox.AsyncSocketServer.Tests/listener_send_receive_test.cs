@@ -29,7 +29,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                     Encoding.ASCII.GetBytes(DataToSend));
 
                 // see what we get
-                var result = await clientServer.Server.ReceiveAsync();
+                var result = await clientServer.ServerWorker.ReceiveAsync();
                 var actual = Encoding.ASCII.GetString(result);
 
                 Assert.Equal(DataToSend, actual);
@@ -45,7 +45,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                 Encoding.ASCII.GetBytes(DataToSend));
 
             // see what we get
-            var result = await clientServer.Server.ReceiveAsync();
+            var result = await clientServer.ServerWorker.ReceiveAsync();
             var actual = Encoding.ASCII.GetString(result);
 
             Assert.Equal(DataToSend, actual);
@@ -69,7 +69,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                 // a process loop, break when the result is null
                 var result = new List<byte>();
                 byte[] chunk;
-                while ((chunk = await clientServer.Server.ReceiveAsync()) != null)
+                while ((chunk = await clientServer.ServerWorker.ReceiveAsync()) != null)
                 {
                     result.AddRange(chunk);
                 }
@@ -85,7 +85,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         {
             using (var clientServer = CreateClientServer())
             {
-                await clientServer.Server.SendAsync(
+                await clientServer.ServerWorker.SendAsync(
                     Encoding.ASCII.GetBytes(DataToSend));
 
                 var buffer = new byte[1024];
@@ -110,7 +110,7 @@ namespace Sandbox.AsyncSocketServer.Tests
                         Encoding.ASCII.GetBytes(expected));
 
                     // see what we get
-                    var result = await clientServer.Server.ReceiveAsync();
+                    var result = await clientServer.ServerWorker.ReceiveAsync();
                     var actual = Encoding.ASCII.GetString(result);
 
                     Assert.Equal(expected, actual);
