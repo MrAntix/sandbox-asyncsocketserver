@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Sandbox.AsyncSocketServer.Messaging
 {
-    public class HttpMessage : IHttpMessage
+    public class HttpMessage
     {
         const string Terminator = "\r\n\r\n";
         readonly List<byte> _data;

@@ -39,7 +39,7 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
                 );
 
             var process = new ServerProcess(
-                listener, () => new HttpMessageHandler(new HttpMessage()))
+                listener, () => new HttpMessageHandler())
                 {
                     Name = "sandbox",
                     Server = _server

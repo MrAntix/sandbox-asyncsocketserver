@@ -7,11 +7,11 @@ namespace Sandbox.AsyncSocketServer.Messaging
     public class HttpMessageHandler :
         IMessageHandler
     {
-        readonly IHttpMessage _message;
+        readonly HttpMessage _message;
 
-        public HttpMessageHandler(IHttpMessage message)
+        public HttpMessageHandler()
         {
-            _message = message;
+            _message = new HttpMessage();
         }
 
         public async Task<byte[]> ProcessAsync(byte[] request)
