@@ -30,12 +30,12 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
 
         protected override void OnShown(EventArgs e)
         {
-            var workerFactory = new WorkerFactory(
+            var workerFactory = new WorkerManager(
                 new BufferManager(100, 2048), TimeSpan.FromMilliseconds(1));
 
             var listener = new Listener(
                 new ListenerSettings(IPAddress.Any, 8088),
-                s => workerFactory.Create(new WorkerSocket(s))
+                s => workerFactory.Get(new WorkerSocket(s))
                 );
 
             var process = new ServerProcess(

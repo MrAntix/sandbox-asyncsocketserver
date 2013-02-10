@@ -5,12 +5,12 @@ using Sandbox.AsyncSocketServer.Abstraction;
 
 namespace Sandbox.AsyncSocketServer.Sockets
 {
-    public class WorkerFactory : IWorkerFactory
+    public class WorkerManager : IWorkerManager
     {
         readonly IBufferManager _bufferManager;
         readonly ConcurrentStack<Worker> _workerPool;
 
-        public WorkerFactory(
+        public WorkerManager(
             IBufferManager bufferManager,
             TimeSpan timeout)
         {
@@ -22,7 +22,7 @@ namespace Sandbox.AsyncSocketServer.Sockets
                           .Select(i => new Worker(timeout)));
         }
 
-        public IWorker Create(IWorkerSocket socket)
+        public IWorker Get(IWorkerSocket socket)
         {
             Worker worker;
             if (!_workerPool.TryPop(out worker))

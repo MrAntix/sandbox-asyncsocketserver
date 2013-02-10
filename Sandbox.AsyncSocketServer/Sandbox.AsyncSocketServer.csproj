@@ -52,9 +52,9 @@
     <Compile Include="Messaging\HttpMessageHandler.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Sockets\Worker.cs" />
-    <Compile Include="Sockets\WorkerFactory.cs" />
+    <Compile Include="Sockets\WorkerManager.cs" />
     <Compile Include="Abstraction\IBufferManager.cs" />
-    <Compile Include="Abstraction\IWorkerFactory.cs" />
+    <Compile Include="Abstraction\IWorkerManager.cs" />
     <Compile Include="Abstraction\IListener.cs" />
     <Compile Include="Abstraction\IWorker.cs" />
     <Compile Include="Sockets\WorkerFactoryException.cs" />
