@@ -33,10 +33,10 @@ namespace Sandbox.AsyncSocketServer.Sockets
             worker.Set(
                 socket, bufferAllocation,
                 () =>
-                {
-                    _workerPool.Push(worker);
-                    _bufferManager.Deallocate(bufferAllocation);
-                });
+                    {
+                        _workerPool.Push(worker);
+                        _bufferManager.Deallocate(bufferAllocation);
+                    });
 
             return worker;
         }

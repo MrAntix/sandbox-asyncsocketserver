@@ -8,16 +8,18 @@ namespace Sandbox.AsyncSocketServer
     {
         readonly IListener _listener;
         readonly Func<IMessageHandler> _createHandler;
+        readonly ILogger _logger;
 
         public ServerProcess(
-            IListener listener, Func<IMessageHandler> createHandler
-            )
+            IListener listener, Func<IMessageHandler> createHandler,
+            ILogger logger)
         {
             if (listener == null) throw new ArgumentNullException("listener");
             if (createHandler == null) throw new ArgumentNullException("createHandler");
 
             _listener = listener;
             _createHandler = createHandler;
+            _logger = logger;
 
             Name = Guid.NewGuid().ToString();
         }
@@ -34,7 +36,7 @@ namespace Sandbox.AsyncSocketServer
                 throw new InvalidOperationException();
 
             IsStarted = true;
-            Server.Log(this, "Started");
+            _logger.Information(this, "Started");
 
             Task.Run(() => AcceptLoop());
         }
@@ -47,14 +49,14 @@ namespace Sandbox.AsyncSocketServer
             IsStarted = false;
             Exception = null;
 
-            Server.Log(this, "Stopped");
+            _logger.Information(this, "Stopped");
         }
 
         async void AcceptLoop()
         {
             try
             {
-                if (IsStarted) Server.Log(this, "Running");
+                if (IsStarted) _logger.Information(this, "Running");
                 while (IsStarted)
                 {
                     // get the next connection
@@ -73,7 +75,7 @@ namespace Sandbox.AsyncSocketServer
         {
             try
             {
-                Server.Log(this, "Process");
+                _logger.Information(this, "Process");
 
                 var handler = _createHandler();
 
@@ -83,7 +85,7 @@ namespace Sandbox.AsyncSocketServer
                     var request = await worker.ReceiveAsync();
                     if (request == null)
                     {
-                        Server.Log(this, "Process Connection Closed");
+                        _logger.Information(this, "Process Connection Closed");
 
                         return;
                     }
@@ -96,7 +98,7 @@ namespace Sandbox.AsyncSocketServer
                     break;
                 }
 
-                Server.Log(this, "Process Complete");
+                _logger.Information(this, "Process Complete");
             }
             catch (Exception ex)
             {
@@ -113,8 +115,13 @@ namespace Sandbox.AsyncSocketServer
             IsStarted = false;
             Exception = ex;
 
-            Server.Exception(this, ex);
-            Server.Log(this, "Stopped on exception");
+            _logger.Error(this, ex);
+            _logger.Information(this, "Stopped on exception");
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
 
         #region dispose
@@ -137,7 +144,7 @@ namespace Sandbox.AsyncSocketServer
 
             _disposed = true;
 
-            Server.Log(this, "Disposed");
+            _logger.Information(this, "Disposed");
         }
 
         ~ServerProcess()

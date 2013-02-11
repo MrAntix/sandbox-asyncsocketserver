@@ -7,33 +7,18 @@ namespace Sandbox.AsyncSocketServer
 {
     public sealed class Server : IServer
     {
+        readonly DelegateLogger _logger;
         readonly HashSet<ServerProcess> _bag = new HashSet<ServerProcess>();
         static readonly object LockObject = new Object();
 
-        readonly Action<ServerProcess, string> _notifyLog;
-        readonly Action<ServerProcess, Exception> _notifyException;
-
-        public Server(
-            Action<ServerProcess, string> notifyLog,
-            Action<ServerProcess, Exception> notifyException)
+        public Server(DelegateLogger logger)
         {
-            _notifyLog = notifyLog;
-            _notifyException = notifyException;
+            _logger = logger;
         }
 
         IEnumerable<ServerProcess> IServer.Processes
         {
             get { return _bag; }
-        }
-
-        public Action<ServerProcess, string> NotifyLog
-        {
-            get { return _notifyLog; }
-        }
-
-        public Action<ServerProcess, Exception> NotifyException
-        {
-            get { return _notifyException; }
         }
 
         void IServer.Add(ServerProcess process)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Windows.Forms;
+using Sandbox.AsyncSocketServer.Abstraction;
 using Sandbox.AsyncSocketServer.Buffering;
 using Sandbox.AsyncSocketServer.Messaging;
 using Sandbox.AsyncSocketServer.Sockets;
@@ -10,22 +11,21 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
     public partial class MainForm : Form
     {
         readonly Server _server;
+        readonly DelegateLogger _logger;
 
         public MainForm()
         {
             InitializeComponent();
 
-            Action<string> log =
-                m =>
+            _logger = new DelegateLogger(
+                (t, f, m) =>
                     {
-                        if (InvokeRequired) Invoke(new Action<string>(Log), m);
-                        else Log(m);
-                    };
+                        if (InvokeRequired)
+                            Invoke(new Action<LogEntryType, string, string>(Log), t, f, m);
+                        else Log(t, f, m);
+                    });
 
-            _server = new Server(
-                (p, m) => log(string.Format("{0}: {1}\r\n", p.Name, m)),
-                (p, ex) => Log(string.Format("!ERROR! {0}: {1}\r\n", p.Name, ex.ToString()))
-                );
+            _server = new Server(_logger);
         }
 
         protected override void OnShown(EventArgs e)
@@ -39,7 +39,8 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
                 );
 
             var process = new ServerProcess(
-                listener, () => new HttpMessageHandler())
+                listener, () => new HttpMessageHandler(),
+                _logger)
                 {
                     Name = "sandbox",
                     Server = _server
@@ -48,10 +49,11 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
             process.Start();
         }
 
-        void Log(string message)
+        void Log(LogEntryType entryType, string title, string message)
         {
             if (!LogTextBox.IsDisposed)
-                LogTextBox.AppendText(message);
+                LogTextBox.AppendText(
+                    string.Format("[{0}] {1}: {2}\r\n", entryType, title, message));
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)

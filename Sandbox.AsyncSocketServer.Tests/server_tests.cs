@@ -12,7 +12,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         {
             using (var server = GetServer())
             {
-                var process = new ServerProcess(GetListener(), GetHandler);
+                var process = new ServerProcess(GetListener(), GetHandler, null);
                 server.Add(process);
 
                 Assert.Equal(server, process.Server);
@@ -24,7 +24,7 @@ namespace Sandbox.AsyncSocketServer.Tests
         {
             using (var server = GetServer())
             {
-                var process = new ServerProcess(GetListener(), GetHandler);
+                var process = new ServerProcess(GetListener(), GetHandler, null);
                 server.Add(process);
 
                 server.Remove(process);
@@ -37,9 +37,9 @@ namespace Sandbox.AsyncSocketServer.Tests
         {
             using (var server = GetServer())
             {
-                server.Add(new ServerProcess(GetListener(), GetHandler));
+                server.Add(new ServerProcess(GetListener(), GetHandler, null));
 
-                var process = new ServerProcess(GetListener(), GetHandler);
+                var process = new ServerProcess(GetListener(), GetHandler, null);
                 server.Add(process);
 
                 Assert.Equal(2, server.Processes.Count());
@@ -56,8 +56,8 @@ namespace Sandbox.AsyncSocketServer.Tests
         {
             var server = GetServer();
 
-            server.Add(new ServerProcess(GetListener(), GetHandler));
-            server.Add(new ServerProcess(GetListener(), GetHandler));
+            server.Add(new ServerProcess(GetListener(), GetHandler, null));
+            server.Add(new ServerProcess(GetListener(), GetHandler, null));
 
             Assert.Equal(2, server.Processes.Count());
 
@@ -68,7 +68,7 @@ namespace Sandbox.AsyncSocketServer.Tests
 
         static IServer GetServer()
         {
-            return new Server(null, null);
+            return new Server(null);
         }
 
         static IListener GetListener()

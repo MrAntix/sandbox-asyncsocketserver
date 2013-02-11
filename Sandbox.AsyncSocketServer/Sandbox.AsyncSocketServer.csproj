@@ -39,10 +39,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstraction\ILogger.cs" />
     <Compile Include="Abstraction\IMessageHandler.cs" />
     <Compile Include="Abstraction\IServer.cs" />
+    <Compile Include="Abstraction\LogEntryType.cs" />
+    <Compile Include="DelegateLogger.cs" />
     <Compile Include="Messaging\HttpMessage.cs" />
-    <Compile Include="ServerExtensions.cs" />
+    <Compile Include="LoggerExtensions.cs" />
     <Compile Include="ServerProcess.cs" />
     <Compile Include="Abstraction\IWorkerSocket.cs" />
     <Compile Include="Sockets\Extensions.cs" />

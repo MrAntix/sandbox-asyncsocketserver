@@ -9,8 +9,5 @@ namespace Sandbox.AsyncSocketServer.Abstraction
         void Remove(ServerProcess process);
 
         IEnumerable<ServerProcess> Processes { get; }
-
-        Action<ServerProcess, Exception> NotifyException { get; }
-        Action<ServerProcess, string> NotifyLog { get; }
     }
 }
