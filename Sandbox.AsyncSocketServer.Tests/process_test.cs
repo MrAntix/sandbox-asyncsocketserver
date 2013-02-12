@@ -119,36 +119,6 @@ namespace Sandbox.AsyncSocketServer.Tests
             }
         }
 
-        [Fact]
-        public void on_error_logger_recieves_exception()
-        {
-            var exception = new Exception();
-
-            var listenerMock = GetListenerMock();
-            listenerMock
-                .Setup(o => o.AcceptAsync())
-                .Callback(() => { throw exception; });
-
-            var loggerMock = new Mock<ILogger>();
-#pragma warning disable 612,618
-            loggerMock
-                .Setup(o => o.Log(
-                    LogLevel.Error, It.IsAny<string>(), It.IsAny<string>()))
-                .Verifiable();
-#pragma warning restore 612,618
-
-            using (var sut = new ServerProcess(
-                listenerMock.Object,
-                () => GetMessageHandlerMock().Object,
-                loggerMock.Object))
-            {
-                sut.Start();
-                Thread.Sleep(50);
-
-                loggerMock.Verify();
-            }
-        }
-
         static Mock<IListener> GetListenerMock(Mock<IWorker> workerMock = null)
         {
             workerMock = workerMock ?? GetWorkerMock();
