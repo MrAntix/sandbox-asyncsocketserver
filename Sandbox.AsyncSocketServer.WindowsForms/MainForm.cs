@@ -24,9 +24,13 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
                             Invoke(new Action<LogLevel, string, string>(Log), t, f, m);
                         else Log(t, f, m);
                     },
-                LogLevel.Diagnostic);
+                LogLevel.System);
 
             _server = new Server(_logger);
+
+            LogLevelControl.DataSource = Enum.GetValues(typeof (LogLevel));
+            LogLevelControl.DataBindings.Add("SelectedItem", _logger, "Level");
+            LogLevelControl.SelectionChangeCommitted += (e, s) => { _logger.Level = (LogLevel)LogLevelControl.SelectedItem; };
         }
 
         protected override void OnShown(EventArgs e)
@@ -48,6 +52,20 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
                 };
 
             process.Start();
+
+            StartStopButton.Click += (s, ce) =>
+                {
+                    if (process.IsStarted)
+                    {
+                        process.Stop();
+                        StartStopButton.Text = "Start";
+                    }
+                    else
+                    {
+                        process.Start();
+                        StartStopButton.Text = "Stop";
+                    }
+                };
         }
 
         void Log(LogLevel level, string title, string message)
@@ -69,5 +87,10 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
             LogTextBox.Clear();
             GC.Collect();
         }
+
+        private void StartStopButton_Click(object sender, EventArgs e)
+        {
+        }
+
     }
 }

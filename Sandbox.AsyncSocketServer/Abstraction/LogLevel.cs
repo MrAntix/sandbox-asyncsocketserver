@@ -3,6 +3,7 @@
     public enum LogLevel
     {
         Error,
+        System,
         Information,
         Diagnostic
     }

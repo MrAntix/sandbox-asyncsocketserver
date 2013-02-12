@@ -32,20 +32,6 @@ namespace Sandbox.AsyncSocketServer
             }
         }
 
-        public static void Diagnostic<T>(
-            this ILogger logger,
-            T sender, Func<string> getText)
-        {
-            Log(logger, LogLevel.Diagnostic, sender, getText);
-        }
-
-        public static void Information<T>(
-            this ILogger logger,
-            T sender, Func<string> getText)
-        {
-            Log(logger, LogLevel.Information, sender, getText);
-        }
-
         public static void Error<T>(
             this ILogger logger,
             T sender, Func<string> getText)
@@ -58,6 +44,27 @@ namespace Sandbox.AsyncSocketServer
             T sender, Exception exception)
         {
             Log(logger, LogLevel.Error, sender, exception.ToString);
+        }
+
+        public static void System<T>(
+            this ILogger logger,
+            T sender, Func<string> getText)
+        {
+            Log(logger, LogLevel.System, sender, getText);
+        }
+
+        public static void Information<T>(
+            this ILogger logger,
+            T sender, Func<string> getText)
+        {
+            Log(logger, LogLevel.Information, sender, getText);
+        }
+
+        public static void Diagnostic<T>(
+            this ILogger logger,
+            T sender, Func<string> getText)
+        {
+            Log(logger, LogLevel.Diagnostic, sender, getText);
         }
     }
 }

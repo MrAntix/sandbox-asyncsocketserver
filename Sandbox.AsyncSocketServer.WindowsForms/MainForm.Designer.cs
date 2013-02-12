@@ -30,7 +30,11 @@
         private void InitializeComponent()
         {
             this.LogTextBox = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.ClearLogButton = new System.Windows.Forms.Button();
+            this.FooterPanel = new System.Windows.Forms.Panel();
+            this.LogLevelControl = new System.Windows.Forms.ComboBox();
+            this.StartStopButton = new System.Windows.Forms.Button();
+            this.FooterPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // LogTextBox
@@ -39,29 +43,63 @@
             this.LogTextBox.Location = new System.Drawing.Point(0, 0);
             this.LogTextBox.Multiline = true;
             this.LogTextBox.Name = "LogTextBox";
-            this.LogTextBox.Size = new System.Drawing.Size(604, 321);
+            this.LogTextBox.Size = new System.Drawing.Size(604, 298);
             this.LogTextBox.TabIndex = 0;
             // 
-            // button1
+            // ClearLogButton
             // 
-            this.button1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.button1.Location = new System.Drawing.Point(0, 298);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(604, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Clear";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.ClearLogButton.Dock = System.Windows.Forms.DockStyle.Right;
+            this.ClearLogButton.Location = new System.Drawing.Point(520, 0);
+            this.ClearLogButton.Name = "ClearLogButton";
+            this.ClearLogButton.Size = new System.Drawing.Size(84, 23);
+            this.ClearLogButton.TabIndex = 1;
+            this.ClearLogButton.Text = "Clear";
+            this.ClearLogButton.UseVisualStyleBackColor = true;
+            this.ClearLogButton.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // FooterPanel
+            // 
+            this.FooterPanel.Controls.Add(this.StartStopButton);
+            this.FooterPanel.Controls.Add(this.LogLevelControl);
+            this.FooterPanel.Controls.Add(this.ClearLogButton);
+            this.FooterPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.FooterPanel.Location = new System.Drawing.Point(0, 298);
+            this.FooterPanel.Name = "FooterPanel";
+            this.FooterPanel.Size = new System.Drawing.Size(604, 23);
+            this.FooterPanel.TabIndex = 2;
+            // 
+            // LogLevelControl
+            // 
+            this.LogLevelControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LogLevelControl.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.LogLevelControl.FormattingEnabled = true;
+            this.LogLevelControl.IntegralHeight = false;
+            this.LogLevelControl.Location = new System.Drawing.Point(0, 0);
+            this.LogLevelControl.Name = "LogLevelControl";
+            this.LogLevelControl.Size = new System.Drawing.Size(520, 21);
+            this.LogLevelControl.TabIndex = 2;
+            // 
+            // StartStopButton
+            // 
+            this.StartStopButton.Dock = System.Windows.Forms.DockStyle.Left;
+            this.StartStopButton.Location = new System.Drawing.Point(0, 0);
+            this.StartStopButton.Name = "StartStopButton";
+            this.StartStopButton.Size = new System.Drawing.Size(75, 23);
+            this.StartStopButton.TabIndex = 3;
+            this.StartStopButton.Text = "Stop";
+            this.StartStopButton.UseVisualStyleBackColor = true;
+            this.StartStopButton.Click += new System.EventHandler(this.StartStopButton_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(604, 321);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.LogTextBox);
+            this.Controls.Add(this.FooterPanel);
             this.Name = "MainForm";
             this.Text = "Async Socket Server";
+            this.FooterPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -70,7 +108,10 @@
         #endregion
 
         private System.Windows.Forms.TextBox LogTextBox;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button ClearLogButton;
+        private System.Windows.Forms.Panel FooterPanel;
+        private System.Windows.Forms.ComboBox LogLevelControl;
+        private System.Windows.Forms.Button StartStopButton;
     }
 }
 

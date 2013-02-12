@@ -36,7 +36,7 @@ namespace Sandbox.AsyncSocketServer
                 throw new InvalidOperationException();
 
             IsStarted = true;
-            _logger.Information(this, () => "Started");
+            _logger.System(this, () => "Started");
 
             Task.Run(() => AcceptLoop());
         }
@@ -49,7 +49,7 @@ namespace Sandbox.AsyncSocketServer
             IsStarted = false;
             Exception = null;
 
-            _logger.Information(this, () => "Stopped");
+            _logger.System(this, () => "Stopped");
         }
 
         async void AcceptLoop()
@@ -115,8 +115,7 @@ namespace Sandbox.AsyncSocketServer
             IsStarted = false;
             Exception = ex;
 
-            _logger.Error(this, ex);
-            _logger.Information(this, () => "Stopped on exception");
+            _logger.System(this, () => "Stopped on exception");
         }
 
         public override string ToString()
