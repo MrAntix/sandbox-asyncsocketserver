@@ -5,7 +5,7 @@ namespace Sandbox.AsyncSocketServer
 {
     public static class LoggerExtensions
     {
-        static readonly Action<string> NullLog = null;
+        public static Action<string> NullLog = null;
 
         static void Log<T>(
             ILogger logger,
@@ -27,7 +27,7 @@ namespace Sandbox.AsyncSocketServer
             else if (NullLog != null)
             {
                 NullLog(
-                    string.Format("[{0}] {1}: {2}", level, sender, getText())
+                    string.Format("[{0}:{1}] {2}: {3}", level, typeof (T).Name, sender, getText())
                     );
             }
         }

@@ -20,7 +20,7 @@ namespace Sandbox.AsyncSocketServer.Abstraction
         void Log(LogLevel level, string filter, string text);
 
         /// <summary>
-        /// <para>Level to log at</para>
+        ///     <para>Level to log at</para>
         /// </summary>
         LogLevel Level { get; set; }
     }

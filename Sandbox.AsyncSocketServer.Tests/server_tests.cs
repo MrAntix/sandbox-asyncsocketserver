@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Moq;
 using Sandbox.AsyncSocketServer.Abstraction;
 using Xunit;
@@ -7,6 +8,11 @@ namespace Sandbox.AsyncSocketServer.Tests
 {
     public class server_tests
     {
+        public server_tests()
+        {
+            LoggerExtensions.NullLog = Console.WriteLine;
+        }
+
         [Fact]
         public void add_process_sets_server()
         {

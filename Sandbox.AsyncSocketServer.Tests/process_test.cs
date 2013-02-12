@@ -9,6 +9,11 @@ namespace Sandbox.AsyncSocketServer.Tests
 {
     public class process_test
     {
+        public process_test()
+        {
+            LoggerExtensions.NullLog = Console.WriteLine;
+        }
+
         [Fact]
         public void dispose_removes_from_server()
         {

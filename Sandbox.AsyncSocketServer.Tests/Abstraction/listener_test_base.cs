@@ -10,6 +10,11 @@ namespace Sandbox.AsyncSocketServer.Tests.Abstraction
 {
     public abstract class listener_test_base : IDisposable
     {
+        public listener_test_base()
+        {
+            LoggerExtensions.NullLog = Console.WriteLine;
+        }
+
         protected class TestSettings
         {
             public int MaxConnections = 1;

@@ -1,10 +1,16 @@
-﻿using Sandbox.AsyncSocketServer.Buffering;
+﻿using System;
+using Sandbox.AsyncSocketServer.Buffering;
 using Xunit;
 
 namespace Sandbox.AsyncSocketServer.Tests
 {
     public class buffer_manager_test
     {
+        public buffer_manager_test()
+        {
+            LoggerExtensions.NullLog = Console.WriteLine;
+        }
+
         [Fact]
         public void allocation_is_created_when_available()
         {
