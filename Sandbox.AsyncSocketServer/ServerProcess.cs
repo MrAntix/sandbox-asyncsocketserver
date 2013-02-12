@@ -36,7 +36,7 @@ namespace Sandbox.AsyncSocketServer
                 throw new InvalidOperationException();
 
             IsStarted = true;
-            _logger.Information(this, "Started");
+            _logger.Information(this, () => "Started");
 
             Task.Run(() => AcceptLoop());
         }
@@ -49,14 +49,14 @@ namespace Sandbox.AsyncSocketServer
             IsStarted = false;
             Exception = null;
 
-            _logger.Information(this, "Stopped");
+            _logger.Information(this, () => "Stopped");
         }
 
         async void AcceptLoop()
         {
             try
             {
-                if (IsStarted) _logger.Information(this, "Running");
+                if (IsStarted) _logger.Information(this, () => "Running");
                 while (IsStarted)
                 {
                     // get the next connection
@@ -75,7 +75,7 @@ namespace Sandbox.AsyncSocketServer
         {
             try
             {
-                _logger.Information(this, "Process");
+                _logger.Information(this, () => "Process");
 
                 var handler = _createHandler();
 
@@ -85,7 +85,7 @@ namespace Sandbox.AsyncSocketServer
                     var request = await worker.ReceiveAsync();
                     if (request == null)
                     {
-                        _logger.Information(this, "Process Connection Closed");
+                        _logger.Information(this, () => "Process Connection Closed");
 
                         return;
                     }
@@ -98,7 +98,7 @@ namespace Sandbox.AsyncSocketServer
                     break;
                 }
 
-                _logger.Information(this, "Process Complete");
+                _logger.Information(this, () => "Process Complete");
             }
             catch (Exception ex)
             {
@@ -116,7 +116,7 @@ namespace Sandbox.AsyncSocketServer
             Exception = ex;
 
             _logger.Error(this, ex);
-            _logger.Information(this, "Stopped on exception");
+            _logger.Information(this, () => "Stopped on exception");
         }
 
         public override string ToString()
@@ -144,7 +144,7 @@ namespace Sandbox.AsyncSocketServer
 
             _disposed = true;
 
-            _logger.Information(this, "Disposed");
+            _logger.Information(this, () => "Disposed");
         }
 
         ~ServerProcess()

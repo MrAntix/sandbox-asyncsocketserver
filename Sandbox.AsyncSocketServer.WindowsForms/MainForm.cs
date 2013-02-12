@@ -21,9 +21,10 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
                 (t, f, m) =>
                     {
                         if (InvokeRequired)
-                            Invoke(new Action<LogEntryType, string, string>(Log), t, f, m);
+                            Invoke(new Action<LogLevel, string, string>(Log), t, f, m);
                         else Log(t, f, m);
-                    });
+                    },
+                LogLevel.Diagnostic);
 
             _server = new Server(_logger);
         }
@@ -39,7 +40,7 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
                 );
 
             var process = new ServerProcess(
-                listener, () => new HttpMessageHandler(),
+                listener, () => new HttpMessageHandler(_logger),
                 _logger)
                 {
                     Name = "sandbox",
@@ -49,11 +50,11 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
             process.Start();
         }
 
-        void Log(LogEntryType entryType, string title, string message)
+        void Log(LogLevel level, string title, string message)
         {
             if (!LogTextBox.IsDisposed)
                 LogTextBox.AppendText(
-                    string.Format("[{0}] {1}: {2}\r\n", entryType, title, message));
+                    string.Format("[{0}] {1}: {2}\r\n", level, title, message));
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)

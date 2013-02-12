@@ -42,7 +42,7 @@
     <Compile Include="Abstraction\ILogger.cs" />
     <Compile Include="Abstraction\IMessageHandler.cs" />
     <Compile Include="Abstraction\IServer.cs" />
-    <Compile Include="Abstraction\LogEntryType.cs" />
+    <Compile Include="Abstraction\LogLevel.cs" />
     <Compile Include="DelegateLogger.cs" />
     <Compile Include="Messaging\HttpMessage.cs" />
     <Compile Include="LoggerExtensions.cs" />

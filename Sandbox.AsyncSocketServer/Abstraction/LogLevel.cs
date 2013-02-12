@@ -1,9 +1,9 @@
 ﻿namespace Sandbox.AsyncSocketServer.Abstraction
 {
-    public enum LogEntryType
+    public enum LogLevel
     {
-        Diagnostic,
+        Error,
         Information,
-        Error
+        Diagnostic
     }
 }

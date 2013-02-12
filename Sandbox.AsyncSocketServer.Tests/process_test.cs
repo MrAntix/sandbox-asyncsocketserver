@@ -128,7 +128,7 @@ namespace Sandbox.AsyncSocketServer.Tests
 #pragma warning disable 612,618
             loggerMock
                 .Setup(o => o.Log(
-                    LogEntryType.Error, It.IsAny<string>(), It.IsAny<string>()))
+                    LogLevel.Error, It.IsAny<string>(), It.IsAny<string>()))
                 .Verifiable();
 #pragma warning restore 612,618
 

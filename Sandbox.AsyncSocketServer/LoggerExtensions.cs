@@ -1,60 +1,63 @@
 ﻿using System;
-using System.Diagnostics;
 using Sandbox.AsyncSocketServer.Abstraction;
 
 namespace Sandbox.AsyncSocketServer
 {
     public static class LoggerExtensions
     {
-        static void Log(
+        static readonly Action<string> NullLog = null;
+
+        static void Log<T>(
             ILogger logger,
-            LogEntryType entryType, string filter, string message)
+            LogLevel level,
+            T sender, Func<string> getText)
         {
-            if (logger == null)
-                Debug.WriteLine(message, filter);
+            if (logger != null)
+            {
+                if (logger.Level >= level)
+                {
+                    var text = string.Format("{0}: {1}", sender, getText());
+
 #pragma warning disable 612,618
-            else logger.Log(entryType, filter, message);
+                    logger.Log(level, typeof (T).Name, text);
 #pragma warning restore 612,618
+                }
+            }
+
+            else if (NullLog != null)
+            {
+                NullLog(
+                    string.Format("[{0}] {1}: {2}", level, sender, getText())
+                    );
+            }
         }
 
         public static void Diagnostic<T>(
             this ILogger logger,
-            T sender, string message)
+            T sender, Func<string> getText)
         {
-            Log(logger,
-                LogEntryType.Diagnostic,
-                typeof (T).Name,
-                string.Format("{0}: {1}", sender, message));
+            Log(logger, LogLevel.Diagnostic, sender, getText);
         }
 
         public static void Information<T>(
             this ILogger logger,
-            T sender, string message)
+            T sender, Func<string> getText)
         {
-            Log(logger,
-                LogEntryType.Information,
-                typeof (T).Name,
-                string.Format("{0}: {1}", sender, message));
+            Log(logger, LogLevel.Information, sender, getText);
+        }
+
+        public static void Error<T>(
+            this ILogger logger,
+            T sender, Func<string> getText)
+        {
+            Log(logger, LogLevel.Error, sender, getText);
         }
 
         public static void Error<T>(
             this ILogger logger,
             T sender, Exception exception)
         {
-            Log(logger,
-                LogEntryType.Error,
-                typeof (T).Name,
-                string.Format("{0}: {1}", sender, exception));
-        }
-
-        public static void Error<T>(
-            this ILogger logger,
-            T sender, string message)
-        {
-            Log(logger,
-                LogEntryType.Error,
-                typeof (T).Name,
-                string.Format("{0}: {1}", sender, message));
+            Log(logger, LogLevel.Error, sender, exception.ToString);
         }
     }
 }

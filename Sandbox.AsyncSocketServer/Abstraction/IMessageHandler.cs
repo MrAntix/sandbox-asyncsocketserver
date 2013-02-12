@@ -8,7 +8,7 @@ namespace Sandbox.AsyncSocketServer.Abstraction
     public interface IMessageHandler
     {
         /// <summary>
-        ///     <para>Process a message coming from the worker</para>
+        ///     <para>Process a getText coming from the worker</para>
         /// </summary>
         Task<byte[]> ProcessAsync(byte[] request);
     }
