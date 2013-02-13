@@ -16,7 +16,7 @@ namespace Sandbox.AsyncSocketServer.Sockets
         {
             _bufferManager = bufferManager;
 
-            // create event arg pool
+            // create worker pool
             _workerPool = new ConcurrentStack<Worker>(
                 Enumerable.Range(0, bufferManager.MaximumAllocations)
                           .Select(i => new Worker(timeout)));
