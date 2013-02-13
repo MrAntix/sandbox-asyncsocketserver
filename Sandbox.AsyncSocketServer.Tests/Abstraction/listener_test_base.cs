@@ -45,6 +45,7 @@ namespace Sandbox.AsyncSocketServer.Tests.Abstraction
             _listener = new Listener(
                 new ListenerSettings(_ipAddress, ++_port),
                 s => workerFactory.Get(new WorkerSocket(s)));
+            _listener.Start();
         }
 
         protected ClientServer CreateClientServer()

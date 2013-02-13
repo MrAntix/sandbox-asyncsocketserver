@@ -35,39 +35,34 @@ namespace Sandbox.AsyncSocketServer
             if (IsStarted)
                 throw new InvalidOperationException();
 
+            _listener.Start();
+
             IsStarted = true;
             _logger.System(this, () => "Started");
 
-            Task.Run(() => AcceptLoop());
+            Task.Run(() => Accept());
         }
 
         public void Stop()
         {
-            if (!IsStarted)
-                throw new InvalidOperationException();
-
-            IsStarted = false;
-            Exception = null;
-
-            _logger.System(this, () => "Stopped");
+            Stop(() => "Stopped", null);
         }
 
-        async void AcceptLoop()
+        async void Accept()
         {
             try
             {
-                if (IsStarted) _logger.Information(this, () => "Running");
                 while (IsStarted)
                 {
                     // get the next connection
                     var worker = await _listener.AcceptAsync();
 
-                    Process(worker);
+                    if (worker != null) Process(worker);
                 }
             }
             catch (Exception ex)
             {
-                HandleException(ex);
+                Stop(() => "Stopped on Accept exception", ex);
             }
         }
 
@@ -79,7 +74,7 @@ namespace Sandbox.AsyncSocketServer
 
                 var handler = _createHandler();
 
-                while (!worker.Closed)
+                while (IsStarted && !worker.Closed)
                 {
                     // recieve any data, process it and send a response
                     var request = await worker.ReceiveAsync();
@@ -102,20 +97,26 @@ namespace Sandbox.AsyncSocketServer
             }
             catch (Exception ex)
             {
-                HandleException(ex);
+                Stop(() => "Stopped on Process exception", ex);
             }
-            finally
-            {
-                worker.Close();
-            }
+
+            worker.Close();
         }
 
-        void HandleException(Exception ex)
+        void Stop(Func<string> message, Exception ex)
         {
+            if (!IsStarted)
+                throw new InvalidOperationException();
+
             IsStarted = false;
             Exception = ex;
 
-            _logger.System(this, () => "Stopped on exception");
+            _listener.Stop();
+
+            _logger.System(this, message);
+            
+            if (ex != null)
+                _logger.Diagnostic(this, ex.ToString);
         }
 
         public override string ToString()

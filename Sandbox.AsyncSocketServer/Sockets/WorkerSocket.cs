@@ -29,7 +29,7 @@ namespace Sandbox.AsyncSocketServer.Sockets
             {
                 try
                 {
-                    _socket.Shutdown(SocketShutdown.Both);
+                    _socket.Shutdown(SocketShutdown.Send);
                 }
                 catch (Exception)
                 {

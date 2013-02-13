@@ -43,10 +43,17 @@ namespace Sandbox.AsyncSocketServer.Sockets
             if (prev != null) prev();
         }
 
+        internal void Cancel()
+        {
+            IsCanceled = true;
+            Complete();
+        }
+
         internal void Reset()
         {
             _continuation = null;
             IsTimedOut = false;
+            IsCanceled = false;
             IsCompleted = false;
             StopTimer();
         }
@@ -69,6 +76,7 @@ namespace Sandbox.AsyncSocketServer.Sockets
         }
 
         public bool IsCompleted { get; internal set; }
+        public bool IsCanceled { get; internal set; }
         public bool IsTimedOut { get; private set; }
 
         public SocketAsyncEventArgs EventArgs { get; private set; }
@@ -86,7 +94,9 @@ namespace Sandbox.AsyncSocketServer.Sockets
         public void GetResult()
         {
             if (!IsTimedOut
+                && !IsCanceled
                 && EventArgs.SocketError != SocketError.Success)
+
                 throw new SocketException((int) EventArgs.SocketError);
         }
 

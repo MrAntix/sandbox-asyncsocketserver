@@ -59,8 +59,8 @@
             // 
             // FooterPanel
             // 
-            this.FooterPanel.Controls.Add(this.StartStopButton);
             this.FooterPanel.Controls.Add(this.LogLevelControl);
+            this.FooterPanel.Controls.Add(this.StartStopButton);
             this.FooterPanel.Controls.Add(this.ClearLogButton);
             this.FooterPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.FooterPanel.Location = new System.Drawing.Point(0, 298);
@@ -74,9 +74,9 @@
             this.LogLevelControl.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.LogLevelControl.FormattingEnabled = true;
             this.LogLevelControl.IntegralHeight = false;
-            this.LogLevelControl.Location = new System.Drawing.Point(0, 0);
+            this.LogLevelControl.Location = new System.Drawing.Point(75, 0);
             this.LogLevelControl.Name = "LogLevelControl";
-            this.LogLevelControl.Size = new System.Drawing.Size(520, 21);
+            this.LogLevelControl.Size = new System.Drawing.Size(445, 21);
             this.LogLevelControl.TabIndex = 2;
             // 
             // StartStopButton

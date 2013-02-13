@@ -9,37 +9,62 @@ namespace Sandbox.AsyncSocketServer.Sockets
 {
     public class Listener : IListener
     {
-        readonly Socket _socket;
-        readonly SocketAwaitable _awaitable;
+        Socket _socket;
+        SocketAwaitable _awaitable;
 
+        readonly ListenerSettings _settings;
         readonly Func<Socket, IWorker> _createWorker;
 
         public Listener(
             ListenerSettings settings,
             Func<Socket, IWorker> createWorker)
         {
+            _settings = settings;
             _createWorker = createWorker;
 
             // create awaitable
             _awaitable = new SocketAwaitable(Timeout.InfiniteTimeSpan);
+        }
+
+        public void Start()
+        {
+            if (_socket != null)
+                throw new InvalidOperationException("Listener already started");
 
             _socket = CreateBoundSocket(
-                new IPEndPoint(settings.IPAddress, settings.Port));
-            _socket.Listen(settings.Backlog);
+                new IPEndPoint(_settings.IPAddress, _settings.Port));
+            _socket.Listen(_settings.Backlog);
         }
 
         public async Task<IWorker> AcceptAsync()
         {
+            if (_socket == null)
+                throw new InvalidOperationException("Listener not started");
+
             _awaitable.Reset();
             if (!_socket.AcceptAsync(_awaitable.EventArgs))
                 _awaitable.IsCompleted = true;
 
             await _awaitable;
 
+            if (_awaitable.IsCanceled)
+            {
+
+                return null;
+            }
+
             var socket = _awaitable.EventArgs.AcceptSocket;
             _awaitable.EventArgs.AcceptSocket = null;
 
             return _createWorker(socket);
+        }
+
+        public void Stop()
+        {
+            _awaitable.Cancel();
+
+            _socket.Close();
+            _socket = null;
         }
 
         static Socket CreateBoundSocket(IPEndPoint endpoint)
@@ -73,8 +98,12 @@ namespace Sandbox.AsyncSocketServer.Sockets
 
             if (disposing)
             {
+                _socket.Close();
                 _socket.Dispose();
+                _socket = null;
+
                 _awaitable.Dispose();
+                _awaitable = null;
             }
 
             _disposed = true;
