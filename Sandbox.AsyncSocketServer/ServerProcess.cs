@@ -82,7 +82,7 @@ namespace Sandbox.AsyncSocketServer
                     {
                         _logger.Information(this, () => "Process Connection Closed");
 
-                        return;
+                        break;
                     }
 
                     var response = await handler.ProcessAsync(request);
@@ -116,7 +116,7 @@ namespace Sandbox.AsyncSocketServer
             _logger.System(this, message);
             
             if (ex != null)
-                _logger.Diagnostic(this, ex.ToString);
+                _logger.Error(this, ex);
         }
 
         public override string ToString()

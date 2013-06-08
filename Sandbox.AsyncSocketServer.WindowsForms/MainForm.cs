@@ -24,7 +24,7 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
                             Invoke(new Action<LogLevel, string, string>(Log), t, f, m);
                         else Log(t, f, m);
                     },
-                LogLevel.System);
+                LogLevel.Diagnostic);
 
             _server = new Server(_logger);
 
@@ -36,7 +36,7 @@ namespace Sandbox.AsyncSocketServer.WindowsForms
         protected override void OnShown(EventArgs e)
         {
             var workerFactory = new WorkerManager(
-                new BufferManager(10, 2048), TimeSpan.FromTicks(1));
+                new BufferManager(10, 2048), TimeSpan.FromTicks(1), _logger);
 
             var listener = new Listener(
                 new ListenerSettings(IPAddress.Any, 8088),

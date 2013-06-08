@@ -6,7 +6,7 @@ namespace Sandbox.AsyncSocketServer.Sockets
 {
     public class WorkerSocket : IWorkerSocket
     {
-        readonly Socket _socket;
+        Socket _socket;
 
         public WorkerSocket(Socket socket)
         {
@@ -27,14 +27,18 @@ namespace Sandbox.AsyncSocketServer.Sockets
 
             if (disposing)
             {
-                try
+                if (_socket != null)
                 {
-                    _socket.Shutdown(SocketShutdown.Send);
+                    try
+                    {
+                        _socket.Shutdown(SocketShutdown.Both);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    _socket.Close();
+                    _socket = null;
                 }
-                catch (Exception)
-                {
-                }
-                _socket.Close();
             }
 
             _disposed = true;

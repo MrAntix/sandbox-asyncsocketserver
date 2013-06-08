@@ -40,7 +40,7 @@ namespace Sandbox.AsyncSocketServer.Tests.Abstraction
             _ipAddress = ipHostInfo.AddressList[1];
 
             _manager = new BufferManager(Settings.MaxConnections, Settings.BufferSize);
-            var workerFactory = new WorkerManager(_manager, Settings.Timeout);
+            var workerFactory = new WorkerManager(_manager, Settings.Timeout, null);
 
             _listener = new Listener(
                 new ListenerSettings(_ipAddress, ++_port),

@@ -8,12 +8,14 @@ namespace Sandbox.AsyncSocketServer.Sockets
 {
     public class Worker : IWorker
     {
+        readonly ILogger _logger;
         readonly SocketAwaitable _awaitable;
         IWorkerSocket _socket;
         Action _release;
 
-        public Worker(TimeSpan timeout)
+        public Worker(TimeSpan timeout, ILogger logger)
         {
+            _logger = logger;
             _awaitable = new SocketAwaitable(timeout);
         }
 
@@ -34,6 +36,8 @@ namespace Sandbox.AsyncSocketServer.Sockets
 
         public async Task<byte[]> ReceiveAsync()
         {
+            _logger.Diagnostic(this, () => "Receiving");
+
             _awaitable.Reset();
 
             if (!_socket.ReceiveAsync(_awaitable.EventArgs))
@@ -43,13 +47,16 @@ namespace Sandbox.AsyncSocketServer.Sockets
 
             if (_awaitable.IsTimedOut)
             {
-                Close();
+                _logger.Error(this, () => "Timed out");
+
                 return null;
             }
 
             // check the number of bytes recieved, 
             // if 0, the remote end has closed the connection
             var bytesReceived = _awaitable.EventArgs.BytesTransferred;
+            _logger.Diagnostic(this, () => string.Format("Received: {0}", bytesReceived));
+
             if (bytesReceived == 0) return null;
 
             return _awaitable
@@ -61,6 +68,8 @@ namespace Sandbox.AsyncSocketServer.Sockets
 
         public async Task SendAsync(byte[] data)
         {
+            _logger.Diagnostic(this, () => string.Format("Sending: {0}", data.Length));
+
             _awaitable.Reset();
             _awaitable.EventArgs.SetBuffer(data, 0, data.Length);
 
@@ -68,6 +77,8 @@ namespace Sandbox.AsyncSocketServer.Sockets
                 _awaitable.IsCompleted = true;
 
             await _awaitable;
+
+            _logger.Diagnostic(this, () => string.Format("Sent: {0}", data.Length));
         }
 
         public void Close()
@@ -80,6 +91,8 @@ namespace Sandbox.AsyncSocketServer.Sockets
             Closed = true;
 
             _release();
+
+            _logger.Diagnostic(this, () => "Worker Closed");
         }
 
         public bool Closed { get; private set; }

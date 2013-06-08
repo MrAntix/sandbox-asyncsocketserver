@@ -12,14 +12,15 @@ namespace Sandbox.AsyncSocketServer.Sockets
 
         public WorkerManager(
             IBufferManager bufferManager,
-            TimeSpan timeout)
+            TimeSpan timeout,
+            ILogger logger)
         {
             _bufferManager = bufferManager;
 
             // create worker pool
             _workerPool = new ConcurrentStack<Worker>(
                 Enumerable.Range(0, bufferManager.MaximumAllocations)
-                          .Select(i => new Worker(timeout)));
+                          .Select(i => new Worker(timeout, logger)));
         }
 
         public IWorker Get(IWorkerSocket socket)
